@@ -78,7 +78,7 @@ fun ZkIdComponent(vm: ProofViewModel = viewModel()) {
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text  = "CertChain RS4096 + DeviceSig RS2048 via MOICA",
+                text  = "CertChain RS4096 + UserSig RS2048 via MOICA",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -174,7 +174,7 @@ private fun CircuitDownloadCard(vm: ProofViewModel) {
                     )
                 } else {
                     Text(
-                        text  = "cert_chain_rs4096 + device_sig_rs2048 + g3-smt",
+                        text  = "cert_chain_rs4096 + user_sig_rs2048 + g3-smt",
                         style = MaterialTheme.typography.bodySmall,
                         color = onColor,
                     )
