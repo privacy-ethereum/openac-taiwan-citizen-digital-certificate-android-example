@@ -27,9 +27,9 @@ import java.util.UUID
 import java.util.zip.GZIPInputStream
 
 private const val CERT_CHAIN_PROVING_KEY_URL =
-    "https://github.com/zkmopro/zkID/releases/download/latest/cert_chain_rs4096_proving.key.gz"
+    "https://github.com/privacy-ethereum/zkID/releases/download/RSA-X.509-Cert-latest/cert_chain_rs4096_proving.key.gz"
 private const val USER_SIG_PROVING_KEY_URL =
-    "https://github.com/zkmopro/zkID/releases/download/latest/user_sig_rs2048_proving.key.gz"
+    "https://github.com/privacy-ethereum/zkID/releases/download/RSA-X.509-Cert-latest/user_sig_rs2048_proving.key.gz"
 private const val SMT_SNAPSHOT_URL =
     "https://github.com/moven0831/moica-revocation-smt/releases/download/snapshot-latest/g3-tree-snapshot.json.gz"
 
