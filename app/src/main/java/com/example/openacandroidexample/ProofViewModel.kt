@@ -31,7 +31,7 @@ private const val CERT_CHAIN_PROVING_KEY_URL =
 private const val USER_SIG_PROVING_KEY_URL =
     "https://github.com/privacy-ethereum/zkID/releases/download/RSA-X.509-Cert-latest/user_sig_rs2048_proving.key.gz"
 private const val SMT_SNAPSHOT_URL =
-    "https://github.com/moven0831/moica-revocation-smt/releases/download/snapshot-latest/g3-tree-snapshot.json.gz"
+    "https://github.com/privacy-ethereum/moica-revocation-smt/releases/download/snapshot-latest/g3-tree-snapshot.json.gz"
 
 private const val CERT_CHAIN_PROVING_KEY_NAME = "cert_chain_rs4096_proving.key"
 private const val USER_SIG_PROVING_KEY_NAME = "user_sig_rs2048_proving.key"

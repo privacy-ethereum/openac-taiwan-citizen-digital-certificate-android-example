@@ -1,6 +1,6 @@
 # OpenAC Android Example
 
-An Android example app demonstrating zero-knowledge proof generation and verification using [OpenACKotlin](https://github.com/zkmopro/OpenACKotlin).
+An Android example app demonstrating zero-knowledge proof generation and verification using [OpenACKotlin](https://github.com/privacy-ethereum/OpenACKotlin).
 
 ## Demo
 
@@ -16,7 +16,7 @@ An Android example app demonstrating zero-knowledge proof generation and verific
 
 ## Overview
 
-This app uses [OpenACKotlin](https://github.com/zkmopro/OpenACKotlin) to run the CertChain RS4096 + UserSig RS2048 ZK circuits on Android. The **zkID** tab exposes a scrollable screen with four cards that unlock sequentially:
+This app uses [OpenACKotlin](https://github.com/privacy-ethereum/OpenACKotlin) to run the CertChain RS4096 + UserSig RS2048 ZK circuits on Android. The **zkID** tab exposes a scrollable screen with four cards that unlock sequentially:
 
 ### Circuit Download Card
 
@@ -49,7 +49,7 @@ Expandable card showing the generated circuit input JSON, with a copy-to-clipboa
 Clone the repo and open it in Android Studio.
 
 ```bash
-git clone https://github.com/zkmopro/OpenACAndroidExample
+git clone https://github.com/privacy-ethereum/OpenACAndroidExample
 ```
 
 ### Configuration — `Secrets.kt`
@@ -90,4 +90,4 @@ The app requires an internet connection on first launch to download the circuit 
 
 ## Dependencies
 
-- [OpenACKotlin](https://github.com/zkmopro/OpenACKotlin) — Kotlin bindings for the mopro ZK proving backend (`generateCertChainRs4096Input`, `proveCertChainRs4096`, `proveUserSigRs2048`)
+- [OpenACKotlin](https://github.com/privacy-ethereum/OpenACKotlin) — Kotlin bindings for the mopro ZK proving backend (`generateCertChainRs4096Input`, `proveCertChainRs4096`, `proveUserSigRs2048`)
