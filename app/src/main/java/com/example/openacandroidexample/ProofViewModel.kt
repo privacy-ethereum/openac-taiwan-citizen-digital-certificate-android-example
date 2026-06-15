@@ -37,8 +37,8 @@ private const val CERT_CHAIN_PROVING_KEY_NAME = "cert_chain_rs4096_proving.key"
 private const val USER_SIG_PROVING_KEY_NAME = "user_sig_rs2048_proving.key"
 private const val SMT_SNAPSHOT_NAME           = "g3-tree-snapshot.json.gz"
 
-private const val SERVER_URL      = "https://a5b6-3-85-109-129.ngrok-free.app/challenge"
-private const val LINK_VERIFY_URL = "https://a5b6-3-85-109-129.ngrok-free.app/link-verify"
+private const val SERVER_URL      = "https://b33f-54-237-15-198.ngrok-free.app/challenge"
+private const val LINK_VERIFY_URL = "https://b33f-54-237-15-198.ngrok-free.app/link-verify"
 
 const val RETURN_SCHEME = "openac"
 const val RETURN_URL    = "$RETURN_SCHEME://callback"

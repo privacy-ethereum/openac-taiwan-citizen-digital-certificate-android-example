@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">OpenACAndroidExample</string>
-    <string name="vm_hint_sign_data">PTT identity verification</string>
+    <string name="vm_hint_sign_data">identity verification</string>
 </resources>

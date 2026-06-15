@@ -52,6 +52,43 @@ Clone the repo and open it in Android Studio.
 git clone https://github.com/privacy-ethereum/OpenACAndroidExample
 ```
 
+### 1. Start the verifier server
+
+Clone and run [go-zkid-verifier](https://github.com/privacy-ethereum/go-zkid-verifier), then expose it via [ngrok](https://ngrok.com):
+
+```bash
+# In the go-zkid-verifier directory
+make download-keys
+make build
+make serve
+```
+
+```bash
+# In a separate terminal
+ngrok http 8080
+```
+
+ngrok will print a public URL like `https://b33f-54-237-15-198.ngrok-free.app`. Copy it.
+
+### 2. Update the server URLs in the app
+
+Open `app/src/main/java/com/example/openacandroidexample/ProofViewModel.kt` and replace the two URL constants near the top of the file with your ngrok URL:
+
+```kotlin
+private const val SERVER_URL      = "https://<your-subdomain>.ngrok-free.app/challenge"
+private const val LINK_VERIFY_URL = "https://<your-subdomain>.ngrok-free.app/link-verify"
+```
+
+### 4. Build and run
+
+1. Open the project in Android Studio.
+2. Select a physical Android device and ensure the [TW FidO app (行動自然人憑證)](https://play.google.com/store/apps/details?id=tw.gov.moi.moica.mobile) is installed.
+3. Build and run.
+4. On first launch, tap **Download Circuit + Keys** and wait for all files to download.
+5. Tap **0. Get TBS Challenge** to fetch a challenge from the server.
+6. Enter your ID number (身分證字號), then follow the MOICA steps in order.
+7. Tap **Run All (Prove → Verify)** (or individual step buttons) to generate and verify the ZK proofs.
+
 ### Configuration — `Secrets.kt`
 
 The app requires TW FidO SP service credentials. Create or update the file below **before building** (it is git-ignored):
