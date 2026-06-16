@@ -1,5 +1,11 @@
 # OpenAC Taiwan Citizen Digital Certificate Android Example
 
+<p align="center">
+<a href="https://drive.google.com/file/d/15ukmBzA5Ih1SFu0uuf1LursOIYai7ooU/view?usp=sharing"><img src="https://i.imgur.com/kct14sr.png"
+alt="Demo of the Nextcloud Android files app"
+height="40"></a>
+</p>
+
 An Android example app that integrates Taiwan's Citizen Digital Certificate (TW FidO) with [openac-rsa-x509-kotlin](https://github.com/privacy-ethereum/openac-rsa-x509-kotlin) to generate a zero-knowledge proof from the certificate signature and send it to a server for verification.
 
 ## Demo
@@ -13,7 +19,6 @@ An Android example app that integrates Taiwan's Citizen Digital Certificate (TW 
 | :------------------------------------------------: | :-----------------------------------------------: |
 | ![Generate Proof](images/openac-android-prove.gif) | ![Verify Proof](images/openac-android-verify.gif) |
 |                    \~ 6 seconds                    |                   \~ 10 seconds                   |
-
 
 ### Circuit Download Card
 
@@ -30,7 +35,7 @@ Enter a masked **ID Number**, then follow the four numbered steps:
 - **2. Open MOICA App** — launches the MOICA app via deep-link for the user to sign (app-to-app flow); enabled after an SP ticket is obtained
 - **3. Poll ATH Result** — calls `getAthOrSignResult` and displays the signed response and cert snippets; enabled after an SP ticket is obtained
 
-### circuit_input.json Card _(visible after Generate Input completes)_
+### circuit*input.json Card *(visible after Generate Input completes)\_
 
 Expandable card showing the generated circuit input JSON, with a copy-to-clipboard button.
 
