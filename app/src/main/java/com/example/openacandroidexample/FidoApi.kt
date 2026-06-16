@@ -171,6 +171,7 @@ suspend fun getSpTicket(params: SpTicketParams): String = withContext(Dispatcher
     try {
         connection.requestMethod = "POST"
         connection.setRequestProperty("Content-Type", "application/json; charset=utf-8")
+        connection.setRequestProperty("Connection", "close")
         connection.doOutput = true
         connection.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
 
@@ -205,6 +206,7 @@ suspend fun getAthOrSignResult(spTicket: String): AthOrSignResultResponse = with
     try {
         connection.requestMethod = "POST"
         connection.setRequestProperty("Content-Type", "application/json; charset=utf-8")
+        connection.setRequestProperty("Connection", "close")
         connection.doOutput = true
         connection.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
 

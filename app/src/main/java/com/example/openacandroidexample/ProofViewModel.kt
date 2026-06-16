@@ -3,6 +3,7 @@ package com.example.openacandroidexample
 import android.app.Application
 import android.content.Intent
 import android.content.pm.PackageManager
+import com.example.openacandroidexample.BuildConfig
 import android.net.Uri
 import android.util.Base64
 import androidx.compose.runtime.getValue
@@ -316,6 +317,7 @@ class ProofViewModel(application: Application) : AndroidViewModel(application) {
                 conn.requestMethod = "POST"
                 conn.setRequestProperty("Content-Type", "application/json")
                 conn.setRequestProperty("ngrok-skip-browser-warning", "true")
+                conn.setRequestProperty("Connection", "close")
                 conn.doOutput = true
                 conn.outputStream.use { it.write("{}".toByteArray()) }
                 val text = conn.inputStream.bufferedReader().readText()
@@ -595,6 +597,7 @@ class ProofViewModel(application: Application) : AndroidViewModel(application) {
                 conn.requestMethod = "POST"
                 conn.setRequestProperty("Content-Type", "application/json")
                 conn.setRequestProperty("ngrok-skip-browser-warning", "true")
+                conn.setRequestProperty("Connection", "close")
                 conn.doOutput = true
                 val body = JSONObject().apply {
                     put("cert_chain_type",  "rs4096")

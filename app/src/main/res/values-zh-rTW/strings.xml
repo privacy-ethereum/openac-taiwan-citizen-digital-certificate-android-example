@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">測試驗證端</string>
+
+    <!-- Intro -->
+    <string name="intro_title">使用行動自然人憑證\n取得台灣人徽章</string>
+    <string name="intro_body">你將使用行動自然人憑證確認自己是年滿 18 歲的台灣人。驗證成功後，測試驗證端個人檔案會顯示台灣人徽章。</string>
+    <string name="label_verifies">驗證內容</string>
+    <string name="value_badge_citizen">台灣人徽章</string>
+    <string name="label_requires">驗證條件</string>
+    <string name="value_requires">年滿 18 歲的台灣人</string>
+    <string name="label_how">使用方式</string>
+    <string name="value_how">透過行動自然人憑證 App 完成簽署</string>
+    <string name="intro_privacy_note">測試驗證端會收到完成驗證所需的資訊，用來確認你符合徽章資格並更新你的個人檔案。完整身分資料不會直接提供給測試驗證端。</string>
+    <string name="btn_start">開始驗證</string>
+
+    <!-- Readiness -->
+    <string name="readiness_title">驗證前檢查</string>
+    <string name="readiness_subtitle">請先確認手機已準備好完成行動自然人憑證驗證。</string>
+    <string name="label_moica_app">行動自然人憑證 App</string>
+    <string name="status_installed">已安裝</string>
+    <string name="status_not_installed">未安裝</string>
+    <string name="label_national_id">身分證字號</string>
+    <string name="id_placeholder">請輸入身分證字號</string>
+    <string name="status_ready">已準備完成</string>
+    <string name="circuit_downloading">下載中 %d%%</string>
+    <string name="status_preparing">準備中</string>
+    <string name="label_check_id">檢查身分證字號</string>
+    <string name="check_id_hint_enter">請輸入身分證字號後送出</string>
+    <string name="check_id_hint_invalid">檢查身分證字號</string>
+    <string name="check_id_hint_tap">點擊送出取得驗證請求</string>
+    <string name="check_id_waiting_circuit">等待本機驗證元件下載完成</string>
+    <string name="check_id_fetching_challenge">取得驗證請求中…</string>
+    <string name="check_id_fetching_ticket">取得 SP Ticket 中…</string>
+    <string name="label_local_verifier">本機驗證元件</string>
+    <string name="label_sign_authorize">簽署授權</string>
+    <string name="sign_authorize_sub">下一步會開啟行動自然人憑證 App 進行簽署</string>
+    <string name="readiness_download_warning_title">需要儲存空間</string>
+    <string name="readiness_download_warning_message">下載驗證元件需要約 81 MB 的流量，解壓縮後將佔用約 950 MB 的儲存空間。</string>
+    <string name="readiness_download_warning_confirm">下載（約 81 MB）</string>
+    <string name="btn_open_moica">前往行動自然人憑證</string>
+    <string name="btn_back">返回</string>
+    <string name="countdown_label">剩餘時間</string>
+    <string name="countdown_expired">請求已過期 — 請重新返回主畫面</string>
+
+
+    <!-- Returned from MOICA -->
+    <string name="returned_title">已取得簽署結果</string>
+    <string name="returned_body">行動自然人憑證已完成確認。接下來會在你的裝置上準備驗證資料。</string>
+    <string name="returned_verify_content">驗證內容</string>
+    <string name="label_credential">使用憑證</string>
+    <string name="value_credential">行動自然人憑證</string>
+    <string name="label_signing_status">簽署狀態</string>
+    <string name="signing_status_done">已完成</string>
+    <string name="signing_status_checking">確認中</string>
+    <string name="signing_status_incomplete">未完成</string>
+    <string name="signing_status_waiting">等待中</string>
+    <string name="returned_label_next">下一步</string>
+    <string name="returned_value_next">準備資格驗證</string>
+    <string name="btn_continue">繼續</string>
+
+    <!-- Verification Progress -->
+    <string name="progress_submitting_title">正在送出驗證結果</string>
+    <string name="progress_submitting_body">請保持 App 開啟。測試驗證端正在確認你的驗證結果，完成後會更新你的個人檔案。</string>
+    <string name="progress_verifying_title">正在確認你的資格</string>
+    <string name="progress_verifying_body">系統正在你的手機上完成驗證，可能需要幾秒鐘。請保持 App 開啟。</string>
+    <string name="progress_step1">取得本次驗證請求</string>
+    <string name="progress_step2">開啟行動自然人憑證</string>
+    <string name="progress_step3">取得簽署結果</string>
+    <string name="progress_step4">準備驗證資料</string>
+    <string name="progress_step5">確認你符合使用資格</string>
+    <string name="progress_step6">完成驗證準備</string>
+    <string name="privacy_title">為什麼這樣比較保護隱私？</string>
+    <string name="privacy_body">這次驗證只會確認你是否符合本次要求，不需要把完整身份資料提供給網站。</string>
+    <string name="chip_no_id">只確認必要結果</string>
+    <string name="chip_no_cert">不直接分享完整資料</string>
+    <string name="chip_proof_only">在此裝置上處理</string>
+
+    <!-- Success -->
+    <string name="success_title">徽章驗證成功</string>
+    <string name="success_body">你已完成台灣人徽章驗證。測試驗證端個人檔案將更新徽章狀態。</string>
+    <string name="success_status">驗證成功，台灣人徽章即將顯示在測試驗證端個人檔案。</string>
+    <string name="success_label_result">驗證結果</string>
+    <string name="success_value_result">成功</string>
+    <string name="success_label_badge">徽章</string>
+    <string name="success_label_total_time">總時間</string>
+    <string name="success_total_time_fmt">%.1f 秒</string>
+    <string name="success_label_eligibility">資格確認</string>
+    <string name="success_label_submit_time">送出驗證</string>
+    <string name="success_label_tech_details">技術資訊</string>
+    <string name="success_tech_prove">證明</string>
+    <string name="success_tech_verify">驗證</string>
+    <string name="btn_done">回到測試驗證端</string>
+
+    <!-- Error -->
+    <string name="error_screen_title">驗證時發生問題</string>
+    <string name="error_generic_title">驗證時發生問題</string>
+    <string name="error_moica_title">無法開啟行動自然人憑證 App</string>
+    <string name="error_cancel_title">行動自然人憑證未完成確認</string>
+    <string name="error_nullifier_title">使用者已經註冊過</string>
+    <string name="error_challenge_title">註冊流程已過期</string>
+    <string name="error_moica_body">請確認你已安裝行動自然人憑證 App，並重新嘗試。</string>
+    <string name="error_cancel_body">你可能取消了簽署，或驗證已逾時。請重新嘗試。</string>
+    <string name="error_nullifier_body">該自然人憑證已經註冊過，無法重新註冊。</string>
+    <string name="error_challenge_body">本次註冊流程已過期，請重新嘗試。</string>
+    <string name="error_default_body">驗證過程中發生錯誤，請重新嘗試。</string>
+    <string name="label_error_details">錯誤詳細資訊</string>
+    <string name="btn_try_again">重新嘗試</string>
+    <string name="btn_copy_error">複製錯誤資訊</string>
+    <string name="status_copied">已複製</string>
+    <string name="btn_back_to_start">返回測試驗證端</string>
+
+    <!-- ViewModel / API (matches vm.* in iOS) -->
+    <string name="vm_hint_sign_data">測試驗證端身份驗證</string>
+
+    <!-- Learn More Sheet -->
+    <string name="intro_learn_shared">了解會分享哪些資訊</string>
+    <string name="progress_learn_tech">了解這項技術</string>
+    <string name="learn_more_nav_title">這項技術如何保護你的資料？</string>
+    <string name="learn_more_body">一般的身份驗證可能需要你把完整證件資料提供給網站。這個流程不同：系統會在你的裝置上確認你是否符合本次要求，並只讓網站取得必要的驗證結果。</string>
+    <string name="learn_more_s1_title">只確認必要結果</string>
+    <string name="learn_more_s1_body">網站通常只需要知道你是否符合這次要求，例如是否具備使用資格，而不需要看到完整身份資料。</string>
+    <string name="learn_more_s2_title">不直接分享完整資料</string>
+    <string name="learn_more_s2_body">你的資料會被用來產生本次驗證所需的結果，但網站不需要取得完整自然人憑證內容。</string>
+    <string name="learn_more_s3_title">使用隱私保護技術</string>
+    <string name="learn_more_s3_body">這個流程使用 OpenAC 與零知識技術，讓系統可以確認資格，同時減少不必要的資料揭露。</string>
+    <string name="learn_more_done">我知道了</string>
+</resources>

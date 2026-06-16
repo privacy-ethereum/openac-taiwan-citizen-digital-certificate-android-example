@@ -1,9 +1,20 @@
 package com.example.openacandroidexample
 
+import com.example.openacandroidexample.BuildConfig
+import com.example.openacandroidexample.R
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,528 +24,1137 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.Schedule
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.openacandroidexample.ui.theme.PttAccent
+import com.example.openacandroidexample.ui.theme.PttBackground
+import com.example.openacandroidexample.ui.theme.PttDivider
+import com.example.openacandroidexample.ui.theme.PttError
+import com.example.openacandroidexample.ui.theme.PttPrimary
+import com.example.openacandroidexample.ui.theme.PttSecondary
+import com.example.openacandroidexample.ui.theme.PttSurface
+import kotlinx.coroutines.delay
+import java.util.Date
+import java.util.Locale
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Root component – drives the screen flow
+// ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
 fun ZkIdComponent(vm: ProofViewModel = viewModel()) {
     LaunchedEffect(Unit) { vm.prepareResources() }
 
-    val isBusy = vm.isDownloading || vm.isRunning
-    val scrollState = rememberScrollState()
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color    = PttBackground,
+    ) {
+        AnimatedContent(
+            targetState  = vm.flowStep,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            label        = "screen_transition",
+        ) { step ->
+            when (step) {
+                is ProofViewModel.FlowStep.Intro      -> IntroScreen(vm)
+                is ProofViewModel.FlowStep.Readiness  -> ReadinessScreen(vm)
+                is ProofViewModel.FlowStep.Returned   -> MOICAReturnedScreen(vm)
+                is ProofViewModel.FlowStep.Verifying,
+                is ProofViewModel.FlowStep.Submitting -> VerificationProgressScreen(vm)
+                is ProofViewModel.FlowStep.Success    -> SuccessScreen(vm)
+                is ProofViewModel.FlowStep.Failure    -> ErrorScreen(vm, step.message)
+            }
+        }
+    }
+}
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Screen 1 – Intro
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun IntroScreen(vm: ProofViewModel) {
+    var showLearnMore by remember { mutableStateOf(false) }
+
+    Box(Modifier.fillMaxSize()) {
+        ScreenScaffold {
+            Text(
+                stringResource(R.string.intro_title),
+                style      = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color      = PttPrimary,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                stringResource(R.string.intro_body),
+                style = MaterialTheme.typography.bodyLarge,
+                color = PttSecondary,
+            )
+            Spacer(Modifier.height(24.dp))
+
+            PttCard {
+                InfoRow(stringResource(R.string.label_verifies),  stringResource(R.string.value_badge_citizen))
+                PttDividerLine()
+                InfoRow(stringResource(R.string.label_requires),  stringResource(R.string.value_requires))
+                PttDividerLine()
+                InfoRow(stringResource(R.string.label_how),       stringResource(R.string.value_how))
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Row(
+                modifier          = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(PttSurface)
+                    .padding(16.dp),
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Icon(Icons.Filled.Lock, contentDescription = null,
+                    tint = PttSecondary, modifier = Modifier.size(18.dp).padding(top = 2.dp))
+                Text(
+                    stringResource(R.string.intro_privacy_note),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = PttSecondary,
+                )
+            }
+
+            Spacer(Modifier.height(32.dp))
+
+            PttPrimaryButton(text = stringResource(R.string.btn_start), onClick = { vm.startFlow() })
+            Spacer(Modifier.height(12.dp))
+            TextButton(onClick = { showLearnMore = true }, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    stringResource(R.string.intro_learn_shared),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = PttAccent,
+                )
+            }
+        }
+        if (showLearnMore) {
+            LearnMoreSheet(onDismiss = { showLearnMore = false })
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Screen 2 – Readiness Check
+// ─────────────────────────────────────────────────────────────────────────────
+
+private enum class ReadinessStatus { Ready, Loading, NotReady }
+
+@Composable
+private fun ReadinessScreen(vm: ProofViewModel) {
+    var isIdHidden by remember { mutableStateOf(true) }
+    var showDownloadWarning by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (vm.circuitReady) {
+            if (vm.isValidIdNumber) vm.checkIdAndGetTicket()
+        } else if (!vm.isDownloading) {
+            showDownloadWarning = true
+        }
+    }
+    LaunchedEffect(vm.circuitReady) {
+        if (vm.circuitReady && vm.isValidIdNumber) vm.checkIdAndGetTicket()
+    }
+    LaunchedEffect(vm.isValidIdNumber) {
+        if (vm.isValidIdNumber && vm.circuitReady) vm.checkIdAndGetTicket()
+    }
+
+    val circuitLabel = when {
+        vm.circuitReady  -> stringResource(R.string.status_ready)
+        vm.isDownloading -> stringResource(R.string.circuit_downloading, (vm.downloadProgress * 100).toInt())
+        else             -> stringResource(R.string.status_preparing)
+    }
+    val circuitStatus = when {
+        vm.circuitReady    -> ReadinessStatus.Ready
+        vm.isDownloading   -> ReadinessStatus.Loading
+        else               -> ReadinessStatus.Loading
+    }
+
+    val allReady = vm.moicaAppInstalled && vm.spTicketStatus.isSuccess &&
+                   vm.circuitReady && !vm.isChallengeExpired
+
+    ScreenScaffold {
+        Text(
+            stringResource(R.string.readiness_title),
+            style      = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+            color      = PttPrimary,
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            stringResource(R.string.readiness_subtitle),
+            style = MaterialTheme.typography.bodyLarge,
+            color = PttSecondary,
+        )
+        Spacer(Modifier.height(16.dp))
+
+        PttCard {
+            // MOICA app row
+            ReadinessRow(
+                label  = stringResource(R.string.label_moica_app),
+                detail = if (vm.moicaAppInstalled) stringResource(R.string.status_installed)
+                         else stringResource(R.string.status_not_installed),
+                status = if (vm.moicaAppInstalled) ReadinessStatus.Ready else ReadinessStatus.NotReady,
+            )
+            PttDividerLine()
+
+            // Local verifier (circuit) row
+            ReadinessRow(
+                label  = stringResource(R.string.label_local_verifier),
+                detail = circuitLabel,
+                status = circuitStatus,
+            )
+            PttDividerLine()
+
+            // National ID input row
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text(
+                    stringResource(R.string.label_national_id),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = PttSecondary,
+                )
+                OutlinedTextField(
+                    value         = vm.idNum,
+                    onValueChange = {
+                        vm.idNum = it.uppercase(Locale.ROOT)
+                        vm.resetIdentityCheckOnIdNumberEdit()
+                    },
+                    singleLine           = true,
+                    visualTransformation = if (isIdHidden) PasswordVisualTransformation() else VisualTransformation.None,
+                    trailingIcon         = {
+                        IconButton(onClick = { isIdHidden = !isIdHidden }) {
+                            Icon(
+                                if (isIdHidden) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                contentDescription = null,
+                                tint = PttSecondary,
+                            )
+                        }
+                    },
+                    placeholder     = { Text(stringResource(R.string.id_placeholder), color = PttSecondary) },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Characters,
+                        imeAction      = ImeAction.Done,
+                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        if (vm.isValidIdNumber) vm.checkIdAndGetTicket()
+                    }),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor     = PttPrimary,
+                        unfocusedTextColor   = PttPrimary,
+                        focusedBorderColor   = PttAccent,
+                        unfocusedBorderColor = PttDivider,
+                        cursorColor          = PttAccent,
+                    ),
+                    modifier  = Modifier
+                        .fillMaxWidth()
+                        .testTag("idNumField"),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(color = PttPrimary),
+                )
+            }
+            PttDividerLine()
+
+            // Check ID row
+            CheckIdRow(vm = vm)
+            PttDividerLine()
+
+            // Sign & Authorize row (informational)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(stringResource(R.string.label_sign_authorize),
+                        style = MaterialTheme.typography.bodyMedium, color = PttPrimary)
+                    Text(stringResource(R.string.sign_authorize_sub),
+                        style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                }
+                Icon(Icons.Filled.ExpandMore, contentDescription = null,
+                    tint = PttSecondary, modifier = Modifier.size(16.dp))
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        PttPrimaryButton(
+            text    = stringResource(R.string.btn_open_moica),
+            onClick = { vm.openMOICA() },
+            enabled = allReady,
+            modifier = Modifier.testTag("fidoOpenMoicaButton"),
+        )
+        Spacer(Modifier.height(12.dp))
+        TextButton(
+            onClick  = { vm.reset() },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(stringResource(R.string.btn_back),
+                style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+        }
+
+        if (BuildConfig.DEBUG) {
+
+        }
+    }
+
+    if (showDownloadWarning) {
+        AlertDialog(
+            onDismissRequest = {},
+            title   = { Text(stringResource(R.string.readiness_download_warning_title)) },
+            text    = { Text(stringResource(R.string.readiness_download_warning_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDownloadWarning = false
+                    vm.downloadCircuit()
+                }) {
+                    Text(stringResource(R.string.readiness_download_warning_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDownloadWarning = false
+                    vm.reset()
+                }) {
+                    Text(stringResource(R.string.btn_back))
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun CheckIdRow(vm: ProofViewModel) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            Text(stringResource(R.string.label_check_id),
+                style = MaterialTheme.typography.bodyMedium, color = PttPrimary)
+            when (val s = vm.spTicketStatus) {
+                is ProofViewModel.StepStatus.Idle -> {
+                    when (val tbs = vm.tbsStatus) {
+                        is ProofViewModel.StepStatus.Failure ->
+                            Text(tbs.message,
+                                style = MaterialTheme.typography.bodySmall, color = PttError, maxLines = 2)
+                        else -> when {
+                            vm.idNum.isEmpty() ->
+                                Text(stringResource(R.string.check_id_hint_enter),
+                                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                            !vm.isValidIdNumber ->
+                                Text(stringResource(R.string.check_id_hint_invalid),
+                                    style = MaterialTheme.typography.bodySmall, color = PttAccent)
+                            !vm.circuitReady ->
+                                Text(stringResource(R.string.check_id_waiting_circuit),
+                                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                            tbs is ProofViewModel.StepStatus.Running ->
+                                Text(stringResource(R.string.check_id_fetching_challenge),
+                                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                            else ->
+                                Text(stringResource(R.string.status_preparing),
+                                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                        }
+                    }
+                }
+                is ProofViewModel.StepStatus.Running ->
+                    Text(stringResource(R.string.check_id_fetching_ticket),
+                        style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                is ProofViewModel.StepStatus.Success ->
+                    Text(stringResource(R.string.status_ready),
+                        style = MaterialTheme.typography.bodySmall, color = Color(0xFF34C759))
+                is ProofViewModel.StepStatus.Failure ->
+                    Text(s.message,
+                        style = MaterialTheme.typography.bodySmall, color = PttError, maxLines = 2)
+            }
+        }
+        Spacer(Modifier.width(12.dp))
+        when (vm.spTicketStatus) {
+            is ProofViewModel.StepStatus.Success ->
+                Icon(Icons.Filled.CheckCircle, contentDescription = null,
+                    tint = Color(0xFF34C759), modifier = Modifier.size(22.dp))
+            is ProofViewModel.StepStatus.Running ->
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp), color = PttAccent, strokeWidth = 2.dp)
+            else -> {
+                val tbsRunning = vm.tbsStatus is ProofViewModel.StepStatus.Running
+                if (tbsRunning || (vm.isValidIdNumber && vm.circuitReady)) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp), color = PttAccent, strokeWidth = 2.dp)
+                } else {
+                    Icon(
+                        Icons.Outlined.Schedule,
+                        contentDescription = null,
+                        tint     = PttSecondary,
+                        modifier = Modifier.size(22.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChallengeExpiryCountdown(expiresAt: Date) {
+    var remaining by remember { mutableLongStateOf(expiresAt.time - System.currentTimeMillis()) }
+    LaunchedEffect(expiresAt) {
+        while (remaining > 0) {
+            delay(1000)
+            remaining = expiresAt.time - System.currentTimeMillis()
+        }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(PttSurface)
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Icon(Icons.Filled.Timer, contentDescription = null, tint = PttAccent, modifier = Modifier.size(18.dp))
+        if (remaining > 0) {
+            Text(stringResource(R.string.countdown_label),
+                style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+            Text(
+                formatCountdown(remaining),
+                style      = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                fontWeight = FontWeight.SemiBold,
+                color      = PttPrimary,
+            )
+        } else {
+            Text(
+                stringResource(R.string.countdown_expired),
+                style = MaterialTheme.typography.bodySmall,
+                color = PttError,
+            )
+        }
+    }
+}
+
+private fun formatCountdown(millis: Long): String {
+    val total = (millis / 1000).coerceAtLeast(0)
+    val h = total / 3600
+    val m = (total % 3600) / 60
+    val s = total % 60
+    return if (h > 0) "%d:%02d:%02d".format(h, m, s) else "%d:%02d".format(m, s)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Screen 3 – Return from MOICA
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun MOICAReturnedScreen(vm: ProofViewModel) {
+    ScreenScaffold {
+        Icon(
+            Icons.Filled.CheckCircle,
+            contentDescription = null,
+            tint     = Color(0xFF34C759),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .size(48.dp)
+                .align(Alignment.CenterHorizontally),
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            stringResource(R.string.returned_title),
+            style      = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+            color      = PttPrimary,
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            stringResource(R.string.returned_body),
+            style = MaterialTheme.typography.bodyLarge,
+            color = PttSecondary,
+        )
+        Spacer(Modifier.height(24.dp))
+
+        PttCard {
+            InfoRow(stringResource(R.string.label_verifies),   stringResource(R.string.value_badge_citizen))
+            PttDividerLine()
+            InfoRow(stringResource(R.string.label_credential), stringResource(R.string.value_credential))
+            PttDividerLine()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(stringResource(R.string.label_signing_status),
+                    style    = MaterialTheme.typography.bodyMedium,
+                    color    = PttSecondary,
+                    modifier = Modifier.weight(1f),
+                )
+                SigningStatusView(vm.athResultStatus)
+            }
+            PttDividerLine()
+            InfoRow(stringResource(R.string.returned_label_next), stringResource(R.string.returned_value_next))
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        PttPrimaryButton(
+            text    = stringResource(R.string.btn_continue),
+            onClick = { vm.runLocalVerification() },
+            enabled = vm.athResultStatus.isSuccess,
+        )
+        Spacer(Modifier.height(12.dp))
+        TextButton(
+            onClick  = { vm.reset() },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(stringResource(R.string.btn_back),
+                style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+        }
+    }
+}
+
+@Composable
+private fun SigningStatusView(status: ProofViewModel.StepStatus) {
+    when (status) {
+        is ProofViewModel.StepStatus.Success ->
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Icon(Icons.Filled.CheckCircle, null, tint = Color(0xFF34C759), modifier = Modifier.size(16.dp))
+                Text(stringResource(R.string.signing_status_done),
+                    style = MaterialTheme.typography.bodyMedium, color = Color(0xFF34C759))
+            }
+        is ProofViewModel.StepStatus.Running ->
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                CircularProgressIndicator(modifier = Modifier.size(14.dp), color = PttAccent, strokeWidth = 2.dp)
+                Text(stringResource(R.string.signing_status_checking),
+                    style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+            }
+        is ProofViewModel.StepStatus.Failure ->
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Icon(Icons.Filled.Close, null, tint = PttError, modifier = Modifier.size(16.dp))
+                Text(stringResource(R.string.signing_status_incomplete),
+                    style = MaterialTheme.typography.bodyMedium, color = PttError)
+            }
+        else ->
+            Text(stringResource(R.string.signing_status_waiting),
+                style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Screens 4 & 5 – Verification Progress
+// ─────────────────────────────────────────────────────────────────────────────
+
+private enum class ProgressItemState { Done, Active, Pending }
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun VerificationProgressScreen(vm: ProofViewModel) {
+    val isSubmitting = vm.flowStep is ProofViewModel.FlowStep.Submitting
+    var showLearnMore by remember { mutableStateOf(false) }
+
+    Box(Modifier.fillMaxSize()) {
+        ScreenScaffold {
+            if (isSubmitting) {
+                Text(stringResource(R.string.progress_submitting_title),
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold, color = PttPrimary)
+                Spacer(Modifier.height(4.dp))
+                Text(stringResource(R.string.progress_submitting_body),
+                    style = MaterialTheme.typography.bodyLarge, color = PttSecondary)
+            } else {
+                Text(stringResource(R.string.progress_verifying_title),
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold, color = PttPrimary)
+                Spacer(Modifier.height(4.dp))
+                Text(stringResource(R.string.progress_verifying_body),
+                    style = MaterialTheme.typography.bodyLarge, color = PttSecondary)
+            }
+            Spacer(Modifier.height(24.dp))
+
+            PttCard {
+                ProgressRow(stringResource(R.string.progress_step1), ProgressItemState.Done)
+                PttDividerLine()
+                ProgressRow(stringResource(R.string.progress_step2), ProgressItemState.Done)
+                PttDividerLine()
+                ProgressRow(stringResource(R.string.progress_step3), ProgressItemState.Done)
+                PttDividerLine()
+                ProgressRow(stringResource(R.string.progress_step4), progressItemState(vm.generateInputStatus))
+                PttDividerLine()
+                ProgressRow(stringResource(R.string.progress_step5), progressItemState(vm.proveStatus))
+                PttDividerLine()
+                ProgressRow(stringResource(R.string.progress_step6), progressItemState(vm.verifyStatus))
+            }
+
+            if (isSubmitting || vm.proveStatus is ProofViewModel.StepStatus.Running || vm.proveStatus is ProofViewModel.StepStatus.Success) {
+                Spacer(Modifier.height(16.dp))
+                PttCard {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        Text(stringResource(R.string.privacy_title),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = PttPrimary,
+                        )
+                        Text(stringResource(R.string.privacy_body),
+                            style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement   = Arrangement.spacedBy(8.dp),
+                        ) {
+                            PrivacyChip(stringResource(R.string.chip_no_id),    Icons.Filled.CheckCircle, highlighted = true)
+                            PrivacyChip(stringResource(R.string.chip_no_cert),  Icons.Filled.Lock, highlighted = true)
+                            PrivacyChip(stringResource(R.string.chip_proof_only), Icons.Filled.PhoneAndroid, highlighted = true)
+                        }
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
+                TextButton(onClick = { showLearnMore = true }, modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        stringResource(R.string.progress_learn_tech),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = PttAccent,
+                    )
+                }
+            }
+        }
+        if (showLearnMore) {
+            LearnMoreSheet(onDismiss = { showLearnMore = false })
+        }
+    }
+}
+
+private fun progressItemState(status: ProofViewModel.StepStatus): ProgressItemState = when (status) {
+    is ProofViewModel.StepStatus.Success -> ProgressItemState.Done
+    is ProofViewModel.StepStatus.Running -> ProgressItemState.Active
+    else                                 -> ProgressItemState.Pending
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Screen 6 – Success
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun SuccessScreen(vm: ProofViewModel) {
+    var showTechInfo by remember { mutableStateOf(false) }
+
+    ScreenScaffold {
+        Icon(
+            Icons.Filled.Check,
+            contentDescription = null,
+            tint     = PttAccent,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .size(56.dp)
+                .align(Alignment.CenterHorizontally),
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(R.string.success_title),
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold, color = PttPrimary)
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(R.string.success_body),
+            style = MaterialTheme.typography.bodyLarge, color = PttSecondary)
+        Spacer(Modifier.height(24.dp))
+
+        PttCard {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(stringResource(R.string.success_status),
+                    style    = MaterialTheme.typography.bodyMedium,
+                    color    = Color(0xFF34C759),
+                    modifier = Modifier.weight(1f).padding(end = 8.dp),
+                )
+                Icon(Icons.Filled.CheckCircle, null,
+                    tint = Color(0xFF34C759), modifier = Modifier.size(18.dp))
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        PttCard {
+            InfoRow(stringResource(R.string.success_label_result),     stringResource(R.string.success_value_result))
+            PttDividerLine()
+            InfoRow(stringResource(R.string.success_label_badge),      stringResource(R.string.value_badge_citizen))
+            PttDividerLine()
+            InfoRow(stringResource(R.string.label_credential),         stringResource(R.string.value_credential))
+            vm.totalVerificationSeconds?.let { t ->
+                PttDividerLine()
+                InfoRow(
+                    stringResource(R.string.success_label_total_time),
+                    stringResource(R.string.success_total_time_fmt, t),
+                )
+            }
+            (vm.proveStatus as? ProofViewModel.StepStatus.Success)?.message?.let { detail ->
+                PttDividerLine()
+                InfoRow(stringResource(R.string.success_label_eligibility), detail)
+            }
+            vm.verifyMilliseconds?.let { ms ->
+                PttDividerLine()
+                InfoRow(stringResource(R.string.success_label_submit_time), "$ms ms")
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // Technical details disclosure
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .background(PttSurface)
+                .clickable { showTechInfo = !showTechInfo }
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(stringResource(R.string.success_label_tech_details),
+                    style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+                Icon(
+                    if (showTechInfo) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    contentDescription = null,
+                    tint = PttSecondary, modifier = Modifier.size(16.dp),
+                )
+            }
+            AnimatedVisibility(visible = showTechInfo) {
+                Column(modifier = Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    (vm.proveStatus as? ProofViewModel.StepStatus.Success)?.message?.let {
+                        TechRow(stringResource(R.string.success_tech_prove), it)
+                    }
+                    (vm.verifyStatus as? ProofViewModel.StepStatus.Success)?.message?.let {
+                        TechRow(stringResource(R.string.success_tech_verify), it)
+                    }
+                }
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+        PttPrimaryButton(text = stringResource(R.string.btn_done), onClick = { vm.reset() })
+    }
+}
+
+@Composable
+private fun TechRow(label: String, value: String) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(label, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace), color = PttSecondary)
+        Text(value, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace), color = PttPrimary)
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Screen 7 – Error
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun ErrorScreen(vm: ProofViewModel, message: String) {
+    val clipboard       = LocalClipboardManager.current
+    var copied by remember { mutableStateOf(false) }
+    var showDetails by remember { mutableStateOf(false) }
+
+    val errorTitle = when {
+        "MOICA" in message || "mobilemoica" in message -> stringResource(R.string.error_moica_title)
+        "cancel" in message || "取消" in message       -> stringResource(R.string.error_cancel_title)
+        "nullifier already registered" in message      -> stringResource(R.string.error_nullifier_title)
+        "challenge expired" in message                 -> stringResource(R.string.error_challenge_title)
+        else                                           -> stringResource(R.string.error_screen_title)
+    }
+    val explanation = when {
+        "MOICA" in message || "mobilemoica" in message -> stringResource(R.string.error_moica_body)
+        "cancel" in message || "取消" in message       -> stringResource(R.string.error_cancel_body)
+        "nullifier already registered" in message      -> stringResource(R.string.error_nullifier_body)
+        "challenge expired" in message                 -> stringResource(R.string.error_challenge_body)
+        else                                           -> stringResource(R.string.error_default_body)
+    }
+
+    ScreenScaffold {
+        Icon(
+            Icons.Filled.Warning,
+            contentDescription = null,
+            tint     = PttError,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .size(48.dp)
+                .align(Alignment.CenterHorizontally),
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(R.string.error_screen_title),
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold, color = PttPrimary)
+        Spacer(Modifier.height(24.dp))
+
+        PttCard {
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(errorTitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = PttPrimary,
+                )
+                Text(explanation,
+                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // Error details disclosure
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .background(PttSurface)
+                .clickable { showDetails = !showDetails }
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(stringResource(R.string.label_error_details),
+                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                Icon(
+                    if (showDetails) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    contentDescription = null,
+                    tint = PttSecondary, modifier = Modifier.size(16.dp),
+                )
+            }
+            AnimatedVisibility(visible = showDetails) {
+                Text(
+                    message,
+                    modifier = Modifier.padding(top = 6.dp),
+                    style    = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                    color    = PttSecondary,
+                )
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        PttPrimaryButton(text = stringResource(R.string.btn_try_again), onClick = { vm.resetToReadiness() })
+        Spacer(Modifier.height(12.dp))
+        TextButton(
+            onClick  = {
+                clipboard.setText(AnnotatedString(message))
+                copied = true
+            },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                if (copied) stringResource(R.string.status_copied)
+                else        stringResource(R.string.btn_copy_error),
+                style = MaterialTheme.typography.bodyMedium,
+                color = PttAccent,
+            )
+        }
+        TextButton(
+            onClick  = { vm.reset() },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(stringResource(R.string.btn_back_to_start),
+                style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared UI components
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun ScreenScaffold(content: @Composable ColumnScope.() -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        // ── Title ────────────────────────────────────────────────
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(
-                text  = "OpenAC zkID",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                text  = "CertChain RS4096 + UserSig RS2048 via MOICA",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-        }
-
-        // ── Circuit Download ─────────────────────────────────────
-        CircuitDownloadCard(vm = vm)
-
-        // ── MOICA Section ────────────────────────────────────────
-        AnimatedVisibility(visible = vm.circuitReady) {
-            MoicaCard(vm = vm, isBusy = isBusy)
-        }
-
-        // ── Circuit Input JSON viewer ────────────────────────────
-        AnimatedVisibility(visible = vm.inputJson != null) {
-            InputJsonCard(json = vm.inputJson ?: "")
-        }
-
-        // ── ZK Pipeline ──────────────────────────────────────────
-        AnimatedVisibility(visible = vm.circuitReady) {
-            PipelineCard(vm = vm, isBusy = isBusy)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Circuit Download Card
-// ─────────────────────────────────────────────────────────────────────────────
-
-@Composable
-private fun CircuitDownloadCard(vm: ProofViewModel) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = when {
-                vm.downloadError != null -> MaterialTheme.colorScheme.errorContainer
-                vm.circuitReady         -> MaterialTheme.colorScheme.secondaryContainer
-                else                    -> MaterialTheme.colorScheme.surfaceVariant
-            }
-        ),
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            val onColor = when {
-                vm.downloadError != null -> MaterialTheme.colorScheme.onErrorContainer
-                vm.circuitReady         -> MaterialTheme.colorScheme.onSecondaryContainer
-                else                    -> MaterialTheme.colorScheme.onSurfaceVariant
-            }
-            Text(
-                text = when {
-                    vm.downloadError != null -> "Download failed"
-                    vm.circuitReady         -> "Circuit + Keys ready"
-                    vm.isDownloading        -> "Downloading…"
-                    else                    -> "Circuit + Keys not downloaded"
-                },
-                style      = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold,
-                color      = onColor,
-            )
-
-            if (vm.downloadError != null) {
-                Text(
-                    text  = vm.downloadError!!,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onErrorContainer,
-                )
-            }
-
-            if (vm.isDownloading) {
-                LinearProgressIndicator(
-                    progress = { vm.downloadProgress.toFloat() },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Text(
-                    text  = "${(vm.downloadProgress * 100).toInt()}%",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = onColor,
-                )
-            }
-
-            if (vm.circuitReady) {
-                val dlSec = vm.downloadSeconds
-                if (dlSec != null) {
-                    Text(
-                        text  = "Downloaded in %.1fs".format(dlSec),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = onColor,
-                    )
-                } else {
-                    Text(
-                        text  = "cert_chain_rs4096 + user_sig_rs2048 + g3-smt",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = onColor,
-                    )
-                }
-            }
-
-            if (!vm.circuitReady && !vm.isDownloading) {
-                Button(
-                    onClick  = { vm.downloadCircuit() },
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text("Download Circuit + Keys") }
-            }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Circuit Input JSON Card
-// ─────────────────────────────────────────────────────────────────────────────
-
-@Composable
-private fun InputJsonCard(json: String) {
-    val clipboard         = LocalClipboardManager.current
-    val hScroll           = rememberScrollState()
-    var expanded by remember { mutableStateOf(false) }
-
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Row(
-                modifier              = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment     = Alignment.CenterVertically,
-            ) {
-                Text(
-                    "circuit_input.json",
-                    style      = MaterialTheme.typography.labelLarge,
-                    color      = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Row {
-                    IconButton(onClick = { expanded = !expanded }) {
-                        Icon(
-                            imageVector        = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                            contentDescription = if (expanded) "Collapse" else "Expand",
-                            tint               = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier           = Modifier.size(20.dp),
-                        )
-                    }
-                    IconButton(onClick = { clipboard.setText(AnnotatedString(json)) }) {
-                        Icon(
-                            imageVector        = Icons.Filled.ContentCopy,
-                            contentDescription = "Copy to clipboard",
-                            tint               = MaterialTheme.colorScheme.primary,
-                            modifier           = Modifier.size(20.dp),
-                        )
-                    }
-                }
-            }
-
-            AnimatedVisibility(visible = expanded) {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    HorizontalDivider()
-                    Text(
-                        text       = json,
-                        style      = MaterialTheme.typography.bodySmall,
-                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                        modifier   = Modifier.horizontalScroll(hScroll),
-                    )
-                }
-            }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MOICA Card
-// ─────────────────────────────────────────────────────────────────────────────
-
-@Composable
-private fun MoicaCard(vm: ProofViewModel, isBusy: Boolean) {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Text(
-                "MOICA Signature",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
-            OutlinedTextField(
-                value                = vm.idNum,
-                onValueChange        = { vm.idNum = it },
-                label                = { Text("ID Number") },
-                singleLine           = true,
-                modifier             = Modifier.fillMaxWidth(),
-                keyboardOptions      = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
-                visualTransformation = PasswordVisualTransformation(),
-                enabled              = !isBusy,
-            )
-
-            StepButton(
-                label   = "0. Get TBS Challenge",
-                status  = vm.tbsStatus,
-                enabled = !isBusy,
-                testTag = "tbsChallengeButton",
-                onClick = { vm.regenerateTBS() },
-            )
-
-            StepButton(
-                label   = "1. Get SP Ticket",
-                status  = vm.spTicketStatus,
-                enabled = !isBusy && vm.tbsStatus.isSuccess,
-                testTag = "fidoSpTicketButton",
-                onClick = { vm.computeSPTicket() },
-            )
-
-            StepButton(
-                label   = "2. Open MOICA App",
-                status  = null,
-                enabled = !isBusy && vm.spTicket != null,
-                testTag = "fidoOpenMoicaButton",
-                onClick = { vm.openMOICA() },
-            )
-
-            StepButton(
-                label   = "3. Poll ATH Result",
-                status  = vm.athResultStatus,
-                enabled = !isBusy && vm.spTicket != null,
-                testTag = "fidoPollAthButton",
-                onClick = { vm.pollAthResult() },
-            )
-
-            MoicaResults(vm = vm)
-        }
-    }
+            .background(PttBackground)
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp)
+            .padding(vertical = 56.dp),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Center,
+    ) { content() }
 }
 
 @Composable
-private fun MoicaResults(vm: ProofViewModel) {
-    val steps = listOf(
-        "TBS Challenge" to vm.tbsStatus,
-        "SP Ticket"     to vm.spTicketStatus,
-        "ATH Result"    to vm.athResultStatus,
-    )
-    val hasAny = steps.any { (_, s) -> s !is ProofViewModel.StepStatus.Idle }
-    AnimatedVisibility(visible = hasAny) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            HorizontalDivider()
-
-            steps.forEach { (label, status) ->
-                when (status) {
-                    is ProofViewModel.StepStatus.Success ->
-                        ResultRow(label, status.message, Color(0xFF2E7D32))
-                    is ProofViewModel.StepStatus.Failure ->
-                        ResultRow(label, status.message, MaterialTheme.colorScheme.error)
-                    else -> {}
-                }
-            }
-
-            vm.rtnVal?.let { rtnVal ->
-                HorizontalDivider()
-                ResultRow("rtn_val", rtnVal.ifEmpty { "(empty)" }, MaterialTheme.colorScheme.onSurface)
-            }
-
-            vm.athResponseString?.let { resp ->
-                ResultRow(
-                    "signed_response",
-                    resp.take(64) + if (resp.length > 64) "…" else "",
-                    MaterialTheme.colorScheme.onSurface,
-                )
-            }
-
-            vm.athIssuerCert?.let { cert ->
-                ResultRow(
-                    "cert",
-                    cert.take(64) + if (cert.length > 64) "…" else "",
-                    MaterialTheme.colorScheme.onSurface,
-                )
-            }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ZK Pipeline Card
-// ─────────────────────────────────────────────────────────────────────────────
-
-@Composable
-private fun PipelineCard(vm: ProofViewModel, isBusy: Boolean) {
-    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Text(
-                "ZK Pipeline",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
-            StepButton(
-                label   = "4. Generate Input",
-                status  = vm.generateInputStatus,
-                enabled = !isBusy && vm.athResultStatus.isSuccess,
-                testTag = "zkidGenerateInputButton",
-                onClick = { vm.runGenerateInput() },
-            )
-
-            StepButton(
-                label   = "5. Generate Proof",
-                status  = vm.proveStatus,
-                enabled = !isBusy,
-                testTag = "zkidProveButton",
-                onClick = { vm.runProve() },
-            )
-
-            StepButton(
-                label   = "6. Verify Proof",
-                status  = vm.verifyStatus,
-                enabled = !isBusy && vm.proveStatus.isSuccess,
-                testTag = "zkidVerifyButton",
-                onClick = { vm.runVerify() },
-            )
-
-            HorizontalDivider()
-
-            OutlinedButton(
-                onClick  = { vm.runAll() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("zkidRunAllButton"),
-                enabled  = !isBusy,
-            ) {
-                if (vm.isRunning) {
-                    CircularProgressIndicator(
-                        modifier    = Modifier.size(16.dp),
-                        strokeWidth = 2.dp,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                }
-                Text("Run All (Prove → Verify)")
-            }
-
-            PipelineResults(vm = vm)
-        }
-    }
+private fun PttCard(content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(PttSurface),
+    ) { content() }
 }
 
 @Composable
-private fun PipelineResults(vm: ProofViewModel) {
-    val steps = listOf(
-        "Generate Input" to vm.generateInputStatus,
-        "Generate Proof" to vm.proveStatus,
-        "Verify Proof"   to vm.verifyStatus,
-    )
-    val hasAny = steps.any { (_, s) -> s !is ProofViewModel.StepStatus.Idle }
-    AnimatedVisibility(visible = hasAny) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            HorizontalDivider()
-            steps.forEach { (label, status) ->
-                when (status) {
-                    is ProofViewModel.StepStatus.Success ->
-                        ResultRow(label = label, value = status.message, color = Color(0xFF2E7D32))
-                    is ProofViewModel.StepStatus.Failure ->
-                        ResultRow(label = label, value = status.message, color = MaterialTheme.colorScheme.error)
-                    else -> {}
-                }
-            }
-        }
-    }
+private fun PttDividerLine() {
+    HorizontalDivider(color = PttDivider, thickness = 0.5.dp)
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
 @Composable
-private fun StepButton(
-    label:   String,
-    status:  ProofViewModel.StepStatus?,
-    enabled: Boolean,
-    testTag: String,
-    onClick: () -> Unit,
-) {
+private fun InfoRow(label: String, value: String) {
     Row(
-        modifier              = Modifier.fillMaxWidth(),
-        verticalAlignment     = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Button(
-            onClick  = onClick,
-            modifier = Modifier
-                .weight(1f)
-                .testTag(testTag),
-            enabled  = enabled,
-        ) {
-            if (status?.isRunning == true) {
-                CircularProgressIndicator(
-                    modifier    = Modifier.size(16.dp),
-                    color       = MaterialTheme.colorScheme.onPrimary,
-                    strokeWidth = 2.dp,
-                )
-                Spacer(Modifier.width(8.dp))
-            }
-            Text(label)
-        }
-
-        if (status != null && status !is ProofViewModel.StepStatus.Idle) {
-            val badgeColor = when (status) {
-                is ProofViewModel.StepStatus.Running -> MaterialTheme.colorScheme.secondary
-                is ProofViewModel.StepStatus.Success -> Color(0xFF2E7D32)
-                is ProofViewModel.StepStatus.Failure -> MaterialTheme.colorScheme.error
-                else                                 -> MaterialTheme.colorScheme.secondary
-            }
-            val badgeLabel = when (status) {
-                is ProofViewModel.StepStatus.Running -> "Running…"
-                is ProofViewModel.StepStatus.Success -> "Done"
-                is ProofViewModel.StepStatus.Failure -> "Failed"
-                else                                 -> ""
-            }
-            Surface(
-                shape = MaterialTheme.shapes.small,
-                color = badgeColor.copy(alpha = 0.15f),
-            ) {
-                Text(
-                    badgeLabel,
-                    modifier   = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    style      = MaterialTheme.typography.labelSmall,
-                    color      = badgeColor,
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ResultRow(label: String, value: String, color: Color) {
-    Row(
-        modifier              = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment     = Alignment.Top,
     ) {
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = PttSecondary,
+            modifier = Modifier.weight(0.4f))
+        Text(value, style = MaterialTheme.typography.bodyMedium, color = PttPrimary,
+            textAlign = TextAlign.End, modifier = Modifier.weight(0.6f))
+    }
+}
+
+@Composable
+private fun ReadinessRow(label: String, detail: String, status: ReadinessStatus) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            Text(label, style = MaterialTheme.typography.bodyMedium, color = PttPrimary)
+            Text(
+                detail,
+                style = MaterialTheme.typography.bodySmall,
+                color = when (status) {
+                    ReadinessStatus.Ready    -> Color(0xFF34C759)
+                    ReadinessStatus.NotReady -> PttError
+                    ReadinessStatus.Loading  -> PttSecondary
+                },
+            )
+        }
+        when (status) {
+            ReadinessStatus.Ready ->
+                Icon(Icons.Filled.CheckCircle, null,
+                    tint = Color(0xFF34C759), modifier = Modifier.size(20.dp))
+            ReadinessStatus.NotReady ->
+                Icon(Icons.Filled.Close, null,
+                    tint = PttError, modifier = Modifier.size(20.dp))
+            ReadinessStatus.Loading ->
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp), color = PttAccent, strokeWidth = 2.dp)
+        }
+    }
+}
+
+@Composable
+private fun ProgressRow(label: String, state: ProgressItemState) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        when (state) {
+            ProgressItemState.Done ->
+                Icon(Icons.Filled.CheckCircle, null,
+                    tint = Color(0xFF34C759), modifier = Modifier.size(20.dp))
+            ProgressItemState.Active ->
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp), color = PttAccent, strokeWidth = 2.dp)
+            ProgressItemState.Pending ->
+                Icon(Icons.Filled.Check, null,
+                    tint = PttDivider, modifier = Modifier.size(20.dp))
+        }
         Text(
             label,
-            style    = MaterialTheme.typography.bodySmall,
-            color    = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.weight(0.35f),
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (state == ProgressItemState.Pending) PttSecondary else PttPrimary,
         )
+    }
+}
+
+@Composable
+private fun PrivacyChip(label: String, icon: ImageVector, highlighted: Boolean = false) {
+    val bg = if (highlighted) PttAccent else PttDivider
+    val fg = if (highlighted) PttBackground else PttSecondary
+    Surface(shape = RoundedCornerShape(50), color = bg) {
+        Row(
+            modifier = Modifier.padding(horizontal = if (highlighted) 10.dp else 8.dp, vertical = if (highlighted) 6.dp else 5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Icon(icon, contentDescription = null, tint = fg, modifier = Modifier.size(10.dp))
+            Text(
+                label,
+                style = if (highlighted) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelSmall,
+                fontWeight = if (highlighted) FontWeight.SemiBold else FontWeight.Normal,
+                color = fg,
+            )
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun LearnMoreSheet(onDismiss: () -> Unit) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = PttBackground,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                stringResource(R.string.learn_more_nav_title),
+                style = MaterialTheme.typography.titleMedium,
+                color = PttPrimary,
+            )
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.learn_more_done), color = PttAccent)
+            }
+        }
+        HorizontalDivider(color = PttDivider, thickness = 0.5.dp)
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            Text(
+                stringResource(R.string.learn_more_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = PttSecondary,
+            )
+            LearnMoreSection(
+                title = stringResource(R.string.learn_more_s1_title),
+                body  = stringResource(R.string.learn_more_s1_body),
+            )
+            LearnMoreSection(
+                title = stringResource(R.string.learn_more_s2_title),
+                body  = stringResource(R.string.learn_more_s2_body),
+            )
+            LearnMoreSection(
+                title = stringResource(R.string.learn_more_s3_title),
+                body  = stringResource(R.string.learn_more_s3_body),
+            )
+            Spacer(Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+private fun LearnMoreSection(title: String, body: String) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
-            value,
-            style      = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium,
-            color      = color,
-            modifier   = Modifier.weight(0.65f),
+            title,
+            style      = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color      = PttPrimary,
         )
+        Text(body, style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+    }
+}
+
+@Composable
+private fun PttPrimaryButton(
+    text:     String,
+    onClick:  () -> Unit,
+    enabled:  Boolean  = true,
+    modifier: Modifier = Modifier,
+) {
+    Button(
+        onClick  = onClick,
+        enabled  = enabled,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(52.dp),
+        shape  = RoundedCornerShape(15.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor         = PttAccent,
+            contentColor           = PttBackground,
+            disabledContainerColor = PttDivider,
+            disabledContentColor   = PttSecondary,
+        ),
+    ) {
+        Text(text, fontWeight = FontWeight.SemiBold)
     }
 }

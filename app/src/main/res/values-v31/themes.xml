@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Android 12+ splash screen background colour -->
     <style name="Theme.OpenACAndroidExample" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">#000000</item>
+        <item name="android:windowSplashScreenBackground">#000000</item>
     </style>
+
 </resources>

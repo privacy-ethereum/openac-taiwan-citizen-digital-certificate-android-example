@@ -1,4 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">OpenACAndroidExample</string>
-    <string name="vm_hint_sign_data">identity verification</string>
+    <string name="app_name">Test Verifier</string>
+
+    <!-- Intro -->
+    <string name="intro_title">Get your Verified Taiwanese Badge\nwith Mobile Citizen Digital Certificate</string>
+    <string name="intro_body">You will use your Mobile Citizen Digital Certificate to confirm you are a Taiwanese national aged 18 or older. After successful verification, Test Verifier profile will show the Verified Taiwanese Badge.</string>
+    <string name="label_verifies">Verification</string>
+    <string name="value_badge_citizen">Verified Taiwanese Badge</string>
+    <string name="label_requires">Requirement</string>
+    <string name="value_requires">Taiwanese national, age 18+</string>
+    <string name="label_how">How it works</string>
+    <string name="value_how">Sign using the mobile citizen certificate app</string>
+    <string name="intro_privacy_note">Test Verifier receives the information needed to complete verification to confirm your badge eligibility and update your profile. Full identity data is not shared directly with Test Verifier.</string>
+    <string name="btn_start">Start verification</string>
+
+    <!-- Readiness -->
+    <string name="readiness_title">Before you verify</string>
+    <string name="readiness_subtitle">Please confirm your phone is ready to complete mobile citizen certificate verification.</string>
+    <string name="label_moica_app">Mobile citizen certificate app</string>
+    <string name="status_installed">Installed</string>
+    <string name="status_not_installed">Not installed</string>
+    <string name="label_national_id">National ID number</string>
+    <string name="id_placeholder">Enter national ID number</string>
+    <string name="status_ready">Ready</string>
+    <string name="circuit_downloading">Downloading %d%%</string>
+    <string name="status_preparing">Preparing…</string>
+    <string name="label_check_id">Verify ID number</string>
+    <string name="check_id_hint_enter">Enter your national ID, then submit</string>
+    <string name="check_id_hint_invalid">Verify ID number</string>
+    <string name="check_id_hint_tap">Tap submit to get the verification request</string>
+    <string name="check_id_waiting_circuit">Waiting for the verifier component to finish downloading</string>
+    <string name="check_id_fetching_challenge">Fetching verification challenge…</string>
+    <string name="check_id_fetching_ticket">Requesting SP ticket…</string>
+    <string name="label_local_verifier">On-device verification components</string>
+    <string name="label_sign_authorize">Signing authorization</string>
+    <string name="sign_authorize_sub">Next, the mobile citizen certificate app will open for signing</string>
+    <string name="readiness_download_warning_title">Storage Required</string>
+    <string name="readiness_download_warning_message">Downloading verification components requires about 81 MB of data and uses about 950 MB of storage space after decompression.</string>
+    <string name="readiness_download_warning_confirm">Download (~81 MB)</string>
+    <string name="btn_open_moica">Open mobile citizen certificate</string>
+    <string name="btn_back">Back</string>
+    <string name="countdown_label">Time left</string>
+    <string name="countdown_expired">Challenge expired — Go back to main page</string>
+
+
+    <!-- Returned from MOICA -->
+    <string name="returned_title">Signing result received</string>
+    <string name="returned_body">Mobile citizen certificate confirmation is complete. Verification data will be prepared on your device.</string>
+    <string name="returned_verify_content">Verification</string>
+    <string name="label_credential">Credential</string>
+    <string name="value_credential">Mobile citizen certificate</string>
+    <string name="label_signing_status">Signing status</string>
+    <string name="signing_status_done">Completed</string>
+    <string name="signing_status_checking">Confirming…</string>
+    <string name="signing_status_incomplete">Incomplete</string>
+    <string name="signing_status_waiting">Waiting…</string>
+    <string name="returned_label_next">Next step</string>
+    <string name="returned_value_next">Prepare eligibility check</string>
+    <string name="btn_continue">Continue</string>
+
+    <!-- Verification Progress -->
+    <string name="progress_submitting_title">Sending verification result</string>
+    <string name="progress_submitting_body">Keep this app open. Test Verifier is confirming your verification result; your profile will update when done.</string>
+    <string name="progress_verifying_title">Checking your eligibility</string>
+    <string name="progress_verifying_body">Verification is running on your phone and may take a few seconds. Keep this app open.</string>
+    <string name="progress_step1">Obtain verification request</string>
+    <string name="progress_step2">Open mobile citizen certificate</string>
+    <string name="progress_step3">Receive signing result</string>
+    <string name="progress_step4">Preparing verification data</string>
+    <string name="progress_step5">Checking badge eligibility</string>
+    <string name="progress_step6">Finalizing verification</string>
+    <string name="privacy_title">How does this protect your privacy?</string>
+    <string name="privacy_body">This verification only checks whether you meet the requirement. You do not need to give the website your full identity data.</string>
+    <string name="chip_no_id">Only necessary result</string>
+    <string name="chip_no_cert">No full identity sharing</string>
+    <string name="chip_proof_only">Processed on this device</string>
+
+    <!-- Success -->
+    <string name="success_title">Badge verification successful</string>
+    <string name="success_body">You completed Taiwan badge verification. Test Verifier profile will update.</string>
+    <string name="success_status">Verification succeeded. The Taiwan badge will appear on your Test Verifier profile.</string>
+    <string name="success_label_result">Result</string>
+    <string name="success_value_result">Success</string>
+    <string name="success_label_badge">Badge</string>
+    <string name="success_label_total_time">Total time</string>
+    <string name="success_total_time_fmt">%.1f s</string>
+    <string name="success_label_eligibility">Eligibility check</string>
+    <string name="success_label_submit_time">Send verification result</string>
+    <string name="success_label_tech_details">Technical details</string>
+    <string name="success_tech_prove">Prove</string>
+    <string name="success_tech_verify">Verify</string>
+    <string name="btn_done">Back to Test Verifier</string>
+
+    <!-- Error -->
+    <string name="error_screen_title">Something went wrong</string>
+    <string name="error_generic_title">Verification issue</string>
+    <string name="error_moica_title">Cannot open mobile citizen certificate</string>
+    <string name="error_cancel_title">Mobile citizen certificate confirmation not completed</string>
+    <string name="error_nullifier_title">Already registered</string>
+    <string name="error_challenge_title">Registration expired</string>
+    <string name="error_moica_body">Make sure the mobile citizen certificate app is installed, then try again.</string>
+    <string name="error_cancel_body">You may have canceled signing, or verification timed out. Please try again.</string>
+    <string name="error_nullifier_body">This certificate is already registered and cannot be registered again.</string>
+    <string name="error_challenge_body">This registration session has expired. Please try again.</string>
+    <string name="error_default_body">An error occurred during verification. Please try again.</string>
+    <string name="label_error_details">Error details</string>
+    <string name="btn_try_again">Try again</string>
+    <string name="btn_copy_error">Copy error details</string>
+    <string name="status_copied">Copied</string>
+    <string name="btn_back_to_start">Back to Test Verifier</string>
+
+    <!-- ViewModel / API (matches vm.* in iOS) -->
+    <string name="vm_hint_sign_data">Test Verifier identity verification</string>
+
+    <!-- Learn More Sheet -->
+    <string name="intro_learn_shared">What information is shared</string>
+    <string name="progress_learn_tech">Learn how this works</string>
+    <string name="learn_more_nav_title">How this technology protects your data</string>
+    <string name="learn_more_body">Traditional identity checks may ask you to share full credential data with a website. This flow is different: your browser or device prepares a verifiable result, and the website only receives what it needs for this verification.</string>
+    <string name="learn_more_s1_title">Only the necessary result</string>
+    <string name="learn_more_s1_body">The website usually only needs to know whether you meet the requirement, not your full identity details.</string>
+    <string name="learn_more_s2_title">No full credential sharing</string>
+    <string name="learn_more_s2_body">Your credential is used to prepare the verification result, but the website does not need to receive the full certificate contents.</string>
+    <string name="learn_more_s3_title">Privacy-preserving technology</string>
+    <string name="learn_more_s3_body">This flow uses OpenAC and zero-knowledge technology to confirm eligibility while reducing unnecessary data disclosure.</string>
+    <string name="learn_more_done">Got it</string>
 </resources>
