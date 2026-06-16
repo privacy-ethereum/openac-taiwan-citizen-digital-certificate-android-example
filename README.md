@@ -1,6 +1,6 @@
-# OpenAC Android Example
+# OpenAC Taiwan Citizen Digital Certificate Android Example
 
-An Android example app demonstrating zero-knowledge proof generation and verification using [OpenACKotlin](https://github.com/privacy-ethereum/OpenACKotlin).
+An Android example app that integrates Taiwan's Citizen Digital Certificate (TW FidO) with [openac-rsa-x509-kotlin](https://github.com/privacy-ethereum/openac-rsa-x509-kotlin) to generate a zero-knowledge proof from the certificate signature and send it to a server for verification.
 
 ## Demo
 
@@ -14,9 +14,6 @@ An Android example app demonstrating zero-knowledge proof generation and verific
 | ![Generate Proof](images/openac-android-prove.gif) | ![Verify Proof](images/openac-android-verify.gif) |
 |                    \~ 6 seconds                    |                   \~ 10 seconds                   |
 
-## Overview
-
-This app uses [OpenACKotlin](https://github.com/privacy-ethereum/OpenACKotlin) to run the CertChain RS4096 + UserSig RS2048 ZK circuits on Android. The **zkID** tab exposes a scrollable screen with four cards that unlock sequentially:
 
 ### Circuit Download Card
 
@@ -49,7 +46,7 @@ Expandable card showing the generated circuit input JSON, with a copy-to-clipboa
 Clone the repo and open it in Android Studio.
 
 ```bash
-git clone https://github.com/privacy-ethereum/OpenACAndroidExample
+git clone https://github.com/privacy-ethereum/openac-taiwan-citizen-digital-certificate-android-example
 ```
 
 ### 1. Start the verifier server
@@ -91,7 +88,7 @@ private const val LINK_VERIFY_URL = "https://<your-subdomain>.ngrok-free.app/lin
 
 ### Configuration — `Secrets.kt`
 
-The app requires TW FidO SP service credentials. Create or update the file below **before building** (it is git-ignored):
+The app requires TW FidO SP service credentials. Apply for these as an SP (Service Provider) at [https://fido.moi.gov.tw/pt/](https://fido.moi.gov.tw/pt/), then create or update the file below **before building** (it is git-ignored):
 
 ```
 app/src/main/java/com/example/openacandroidexample/Secrets.kt
@@ -127,4 +124,4 @@ The app requires an internet connection on first launch to download the circuit 
 
 ## Dependencies
 
-- [OpenACKotlin](https://github.com/privacy-ethereum/OpenACKotlin) — Kotlin bindings for the mopro ZK proving backend (`generateCertChainRs4096Input`, `proveCertChainRs4096`, `proveUserSigRs2048`)
+- [openac-rsa-x509-kotlin](https://github.com/privacy-ethereum/openac-rsa-x509-kotlin) — Kotlin bindings for the OpenAC proving backend (`generateCertChainRs4096Input`, `proveCertChainRs4096`, `proveUserSigRs2048`)
