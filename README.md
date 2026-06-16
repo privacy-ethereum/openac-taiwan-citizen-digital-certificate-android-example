@@ -78,7 +78,7 @@ private const val LINK_VERIFY_URL = "https://<your-subdomain>.ngrok-free.app/lin
 
 ### 4. Build and run
 
-1. Open the project in Android Studio.
+1. Open the project in Android Studio (or run `open . -a Android\ Studio` from the project root).
 2. Select a physical Android device and ensure the [TW FidO app (行動自然人憑證)](https://play.google.com/store/apps/details?id=tw.gov.moi.moica.mobile) is installed.
 3. Build and run.
 4. On first launch, tap **Download Circuit + Keys** and wait for all files to download.
