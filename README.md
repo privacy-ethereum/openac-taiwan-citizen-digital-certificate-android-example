@@ -6,7 +6,7 @@ alt="Demo of the Nextcloud Android files app"
 height="40"></a>
 </p>
 
-An Android example app that integrates Taiwan's Citizen Digital Certificate (TW FidO) with [openac-rsa-x509-kotlin](https://github.com/privacy-ethereum/openac-rsa-x509-kotlin) to generate a zero-knowledge proof from the certificate signature and send it to a server for verification.
+An Android example app that integrates Taiwan's Citizen Digital Certificate ([TW FidO](https://fido.moi.gov.tw/pt/)) with [openac-rsa-x509-kotlin](https://github.com/privacy-ethereum/openac-rsa-x509-kotlin) to generate a zero-knowledge proof from the certificate signature and send it to a server for verification.
 
 ## Demo
 
