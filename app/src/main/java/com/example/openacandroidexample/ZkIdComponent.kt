@@ -82,13 +82,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.openacandroidexample.ui.theme.PttAccent
-import com.example.openacandroidexample.ui.theme.PttBackground
-import com.example.openacandroidexample.ui.theme.PttDivider
-import com.example.openacandroidexample.ui.theme.PttError
-import com.example.openacandroidexample.ui.theme.PttPrimary
-import com.example.openacandroidexample.ui.theme.PttSecondary
-import com.example.openacandroidexample.ui.theme.PttSurface
+import com.example.openacandroidexample.ui.theme.VerifierAccent
+import com.example.openacandroidexample.ui.theme.VerifierBackground
+import com.example.openacandroidexample.ui.theme.VerifierDivider
+import com.example.openacandroidexample.ui.theme.VerifierError
+import com.example.openacandroidexample.ui.theme.VerifierPrimary
+import com.example.openacandroidexample.ui.theme.VerifierSecondary
+import com.example.openacandroidexample.ui.theme.VerifierSurface
 import kotlinx.coroutines.delay
 import java.util.Date
 import java.util.Locale
@@ -103,7 +103,7 @@ fun ZkIdComponent(vm: ProofViewModel = viewModel()) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color    = PttBackground,
+        color    = VerifierBackground,
     ) {
         AnimatedContent(
             targetState  = vm.flowStep,
@@ -137,21 +137,21 @@ private fun IntroScreen(vm: ProofViewModel) {
                 stringResource(R.string.intro_title),
                 style      = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
-                color      = PttPrimary,
+                color      = VerifierPrimary,
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 stringResource(R.string.intro_body),
                 style = MaterialTheme.typography.bodyLarge,
-                color = PttSecondary,
+                color = VerifierSecondary,
             )
             Spacer(Modifier.height(24.dp))
 
-            PttCard {
+            VerifierCard {
                 InfoRow(stringResource(R.string.label_verifies),  stringResource(R.string.value_badge_citizen))
-                PttDividerLine()
+                VerifierDividerLine()
                 InfoRow(stringResource(R.string.label_requires),  stringResource(R.string.value_requires))
-                PttDividerLine()
+                VerifierDividerLine()
                 InfoRow(stringResource(R.string.label_how),       stringResource(R.string.value_how))
             }
 
@@ -161,29 +161,29 @@ private fun IntroScreen(vm: ProofViewModel) {
                 modifier          = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(PttSurface)
+                    .background(VerifierSurface)
                     .padding(16.dp),
                 verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Icon(Icons.Filled.Lock, contentDescription = null,
-                    tint = PttSecondary, modifier = Modifier.size(18.dp).padding(top = 2.dp))
+                    tint = VerifierSecondary, modifier = Modifier.size(18.dp).padding(top = 2.dp))
                 Text(
                     stringResource(R.string.intro_privacy_note),
                     style = MaterialTheme.typography.bodySmall,
-                    color = PttSecondary,
+                    color = VerifierSecondary,
                 )
             }
 
             Spacer(Modifier.height(32.dp))
 
-            PttPrimaryButton(text = stringResource(R.string.btn_start), onClick = { vm.startFlow() })
+            VerifierPrimaryButton(text = stringResource(R.string.btn_start), onClick = { vm.startFlow() })
             Spacer(Modifier.height(12.dp))
             TextButton(onClick = { showLearnMore = true }, modifier = Modifier.fillMaxWidth()) {
                 Text(
                     stringResource(R.string.intro_learn_shared),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = PttAccent,
+                    color = VerifierAccent,
                 )
             }
         }
@@ -237,17 +237,17 @@ private fun ReadinessScreen(vm: ProofViewModel) {
             stringResource(R.string.readiness_title),
             style      = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
-            color      = PttPrimary,
+            color      = VerifierPrimary,
         )
         Spacer(Modifier.height(4.dp))
         Text(
             stringResource(R.string.readiness_subtitle),
             style = MaterialTheme.typography.bodyLarge,
-            color = PttSecondary,
+            color = VerifierSecondary,
         )
         Spacer(Modifier.height(16.dp))
 
-        PttCard {
+        VerifierCard {
             // MOICA app row
             ReadinessRow(
                 label  = stringResource(R.string.label_moica_app),
@@ -255,7 +255,7 @@ private fun ReadinessScreen(vm: ProofViewModel) {
                          else stringResource(R.string.status_not_installed),
                 status = if (vm.moicaAppInstalled) ReadinessStatus.Ready else ReadinessStatus.NotReady,
             )
-            PttDividerLine()
+            VerifierDividerLine()
 
             // Local verifier (circuit) row
             ReadinessRow(
@@ -263,7 +263,7 @@ private fun ReadinessScreen(vm: ProofViewModel) {
                 detail = circuitLabel,
                 status = circuitStatus,
             )
-            PttDividerLine()
+            VerifierDividerLine()
 
             // National ID input row
             Column(
@@ -275,7 +275,7 @@ private fun ReadinessScreen(vm: ProofViewModel) {
                 Text(
                     stringResource(R.string.label_national_id),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = PttSecondary,
+                    color = VerifierSecondary,
                 )
                 OutlinedTextField(
                     value         = vm.idNum,
@@ -290,11 +290,11 @@ private fun ReadinessScreen(vm: ProofViewModel) {
                             Icon(
                                 if (isIdHidden) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
                                 contentDescription = null,
-                                tint = PttSecondary,
+                                tint = VerifierSecondary,
                             )
                         }
                     },
-                    placeholder     = { Text(stringResource(R.string.id_placeholder), color = PttSecondary) },
+                    placeholder     = { Text(stringResource(R.string.id_placeholder), color = VerifierSecondary) },
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Characters,
                         imeAction      = ImeAction.Done,
@@ -303,23 +303,23 @@ private fun ReadinessScreen(vm: ProofViewModel) {
                         if (vm.isValidIdNumber) vm.checkIdAndGetTicket()
                     }),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor     = PttPrimary,
-                        unfocusedTextColor   = PttPrimary,
-                        focusedBorderColor   = PttAccent,
-                        unfocusedBorderColor = PttDivider,
-                        cursorColor          = PttAccent,
+                        focusedTextColor     = VerifierPrimary,
+                        unfocusedTextColor   = VerifierPrimary,
+                        focusedBorderColor   = VerifierAccent,
+                        unfocusedBorderColor = VerifierDivider,
+                        cursorColor          = VerifierAccent,
                     ),
                     modifier  = Modifier
                         .fillMaxWidth()
                         .testTag("idNumField"),
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(color = PttPrimary),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(color = VerifierPrimary),
                 )
             }
-            PttDividerLine()
+            VerifierDividerLine()
 
             // Check ID row
             CheckIdRow(vm = vm)
-            PttDividerLine()
+            VerifierDividerLine()
 
             // Sign & Authorize row (informational)
             Row(
@@ -330,18 +330,18 @@ private fun ReadinessScreen(vm: ProofViewModel) {
             ) {
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(stringResource(R.string.label_sign_authorize),
-                        style = MaterialTheme.typography.bodyMedium, color = PttPrimary)
+                        style = MaterialTheme.typography.bodyMedium, color = VerifierPrimary)
                     Text(stringResource(R.string.sign_authorize_sub),
-                        style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                        style = MaterialTheme.typography.bodySmall, color = VerifierSecondary)
                 }
                 Icon(Icons.Filled.ExpandMore, contentDescription = null,
-                    tint = PttSecondary, modifier = Modifier.size(16.dp))
+                    tint = VerifierSecondary, modifier = Modifier.size(16.dp))
             }
         }
 
         Spacer(Modifier.height(24.dp))
 
-        PttPrimaryButton(
+        VerifierPrimaryButton(
             text    = stringResource(R.string.btn_open_moica),
             onClick = { vm.openMOICA() },
             enabled = allReady,
@@ -353,7 +353,7 @@ private fun ReadinessScreen(vm: ProofViewModel) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(stringResource(R.string.btn_back),
-                style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+                style = MaterialTheme.typography.bodyMedium, color = VerifierSecondary)
         }
 
         if (BuildConfig.DEBUG) {
@@ -396,41 +396,41 @@ private fun CheckIdRow(vm: ProofViewModel) {
     ) {
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
             Text(stringResource(R.string.label_check_id),
-                style = MaterialTheme.typography.bodyMedium, color = PttPrimary)
+                style = MaterialTheme.typography.bodyMedium, color = VerifierPrimary)
             when (val s = vm.spTicketStatus) {
                 is ProofViewModel.StepStatus.Idle -> {
                     when (val tbs = vm.tbsStatus) {
                         is ProofViewModel.StepStatus.Failure ->
                             Text(tbs.message,
-                                style = MaterialTheme.typography.bodySmall, color = PttError, maxLines = 2)
+                                style = MaterialTheme.typography.bodySmall, color = VerifierError, maxLines = 2)
                         else -> when {
                             vm.idNum.isEmpty() ->
                                 Text(stringResource(R.string.check_id_hint_enter),
-                                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                                    style = MaterialTheme.typography.bodySmall, color = VerifierSecondary)
                             !vm.isValidIdNumber ->
                                 Text(stringResource(R.string.check_id_hint_invalid),
-                                    style = MaterialTheme.typography.bodySmall, color = PttAccent)
+                                    style = MaterialTheme.typography.bodySmall, color = VerifierAccent)
                             !vm.circuitReady ->
                                 Text(stringResource(R.string.check_id_waiting_circuit),
-                                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                                    style = MaterialTheme.typography.bodySmall, color = VerifierSecondary)
                             tbs is ProofViewModel.StepStatus.Running ->
                                 Text(stringResource(R.string.check_id_fetching_challenge),
-                                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                                    style = MaterialTheme.typography.bodySmall, color = VerifierSecondary)
                             else ->
                                 Text(stringResource(R.string.status_preparing),
-                                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                                    style = MaterialTheme.typography.bodySmall, color = VerifierSecondary)
                         }
                     }
                 }
                 is ProofViewModel.StepStatus.Running ->
                     Text(stringResource(R.string.check_id_fetching_ticket),
-                        style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                        style = MaterialTheme.typography.bodySmall, color = VerifierSecondary)
                 is ProofViewModel.StepStatus.Success ->
                     Text(stringResource(R.string.status_ready),
                         style = MaterialTheme.typography.bodySmall, color = Color(0xFF34C759))
                 is ProofViewModel.StepStatus.Failure ->
                     Text(s.message,
-                        style = MaterialTheme.typography.bodySmall, color = PttError, maxLines = 2)
+                        style = MaterialTheme.typography.bodySmall, color = VerifierError, maxLines = 2)
             }
         }
         Spacer(Modifier.width(12.dp))
@@ -440,17 +440,17 @@ private fun CheckIdRow(vm: ProofViewModel) {
                     tint = Color(0xFF34C759), modifier = Modifier.size(22.dp))
             is ProofViewModel.StepStatus.Running ->
                 CircularProgressIndicator(
-                    modifier = Modifier.size(18.dp), color = PttAccent, strokeWidth = 2.dp)
+                    modifier = Modifier.size(18.dp), color = VerifierAccent, strokeWidth = 2.dp)
             else -> {
                 val tbsRunning = vm.tbsStatus is ProofViewModel.StepStatus.Running
                 if (tbsRunning || (vm.isValidIdNumber && vm.circuitReady)) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(18.dp), color = PttAccent, strokeWidth = 2.dp)
+                        modifier = Modifier.size(18.dp), color = VerifierAccent, strokeWidth = 2.dp)
                 } else {
                     Icon(
                         Icons.Outlined.Schedule,
                         contentDescription = null,
-                        tint     = PttSecondary,
+                        tint     = VerifierSecondary,
                         modifier = Modifier.size(22.dp),
                     )
                 }
@@ -473,26 +473,26 @@ private fun ChallengeExpiryCountdown(expiresAt: Date) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(PttSurface)
+            .background(VerifierSurface)
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Icon(Icons.Filled.Timer, contentDescription = null, tint = PttAccent, modifier = Modifier.size(18.dp))
+        Icon(Icons.Filled.Timer, contentDescription = null, tint = VerifierAccent, modifier = Modifier.size(18.dp))
         if (remaining > 0) {
             Text(stringResource(R.string.countdown_label),
-                style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                style = MaterialTheme.typography.bodySmall, color = VerifierSecondary)
             Text(
                 formatCountdown(remaining),
                 style      = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                 fontWeight = FontWeight.SemiBold,
-                color      = PttPrimary,
+                color      = VerifierPrimary,
             )
         } else {
             Text(
                 stringResource(R.string.countdown_expired),
                 style = MaterialTheme.typography.bodySmall,
-                color = PttError,
+                color = VerifierError,
             )
         }
     }
@@ -528,21 +528,21 @@ private fun MOICAReturnedScreen(vm: ProofViewModel) {
             stringResource(R.string.returned_title),
             style      = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
-            color      = PttPrimary,
+            color      = VerifierPrimary,
         )
         Spacer(Modifier.height(4.dp))
         Text(
             stringResource(R.string.returned_body),
             style = MaterialTheme.typography.bodyLarge,
-            color = PttSecondary,
+            color = VerifierSecondary,
         )
         Spacer(Modifier.height(24.dp))
 
-        PttCard {
+        VerifierCard {
             InfoRow(stringResource(R.string.label_verifies),   stringResource(R.string.value_badge_citizen))
-            PttDividerLine()
+            VerifierDividerLine()
             InfoRow(stringResource(R.string.label_credential), stringResource(R.string.value_credential))
-            PttDividerLine()
+            VerifierDividerLine()
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -551,18 +551,18 @@ private fun MOICAReturnedScreen(vm: ProofViewModel) {
             ) {
                 Text(stringResource(R.string.label_signing_status),
                     style    = MaterialTheme.typography.bodyMedium,
-                    color    = PttSecondary,
+                    color    = VerifierSecondary,
                     modifier = Modifier.weight(1f),
                 )
                 SigningStatusView(vm.athResultStatus)
             }
-            PttDividerLine()
+            VerifierDividerLine()
             InfoRow(stringResource(R.string.returned_label_next), stringResource(R.string.returned_value_next))
         }
 
         Spacer(Modifier.height(24.dp))
 
-        PttPrimaryButton(
+        VerifierPrimaryButton(
             text    = stringResource(R.string.btn_continue),
             onClick = { vm.runLocalVerification() },
             enabled = vm.athResultStatus.isSuccess,
@@ -573,7 +573,7 @@ private fun MOICAReturnedScreen(vm: ProofViewModel) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(stringResource(R.string.btn_back),
-                style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+                style = MaterialTheme.typography.bodyMedium, color = VerifierSecondary)
         }
     }
 }
@@ -589,19 +589,19 @@ private fun SigningStatusView(status: ProofViewModel.StepStatus) {
             }
         is ProofViewModel.StepStatus.Running ->
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                CircularProgressIndicator(modifier = Modifier.size(14.dp), color = PttAccent, strokeWidth = 2.dp)
+                CircularProgressIndicator(modifier = Modifier.size(14.dp), color = VerifierAccent, strokeWidth = 2.dp)
                 Text(stringResource(R.string.signing_status_checking),
-                    style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+                    style = MaterialTheme.typography.bodyMedium, color = VerifierSecondary)
             }
         is ProofViewModel.StepStatus.Failure ->
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Icon(Icons.Filled.Close, null, tint = PttError, modifier = Modifier.size(16.dp))
+                Icon(Icons.Filled.Close, null, tint = VerifierError, modifier = Modifier.size(16.dp))
                 Text(stringResource(R.string.signing_status_incomplete),
-                    style = MaterialTheme.typography.bodyMedium, color = PttError)
+                    style = MaterialTheme.typography.bodyMedium, color = VerifierError)
             }
         else ->
             Text(stringResource(R.string.signing_status_waiting),
-                style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+                style = MaterialTheme.typography.bodyMedium, color = VerifierSecondary)
     }
 }
 
@@ -622,37 +622,37 @@ private fun VerificationProgressScreen(vm: ProofViewModel) {
             if (isSubmitting) {
                 Text(stringResource(R.string.progress_submitting_title),
                     style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold, color = PttPrimary)
+                    fontWeight = FontWeight.Bold, color = VerifierPrimary)
                 Spacer(Modifier.height(4.dp))
                 Text(stringResource(R.string.progress_submitting_body),
-                    style = MaterialTheme.typography.bodyLarge, color = PttSecondary)
+                    style = MaterialTheme.typography.bodyLarge, color = VerifierSecondary)
             } else {
                 Text(stringResource(R.string.progress_verifying_title),
                     style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold, color = PttPrimary)
+                    fontWeight = FontWeight.Bold, color = VerifierPrimary)
                 Spacer(Modifier.height(4.dp))
                 Text(stringResource(R.string.progress_verifying_body),
-                    style = MaterialTheme.typography.bodyLarge, color = PttSecondary)
+                    style = MaterialTheme.typography.bodyLarge, color = VerifierSecondary)
             }
             Spacer(Modifier.height(24.dp))
 
-            PttCard {
+            VerifierCard {
                 ProgressRow(stringResource(R.string.progress_step1), ProgressItemState.Done)
-                PttDividerLine()
+                VerifierDividerLine()
                 ProgressRow(stringResource(R.string.progress_step2), ProgressItemState.Done)
-                PttDividerLine()
+                VerifierDividerLine()
                 ProgressRow(stringResource(R.string.progress_step3), ProgressItemState.Done)
-                PttDividerLine()
+                VerifierDividerLine()
                 ProgressRow(stringResource(R.string.progress_step4), progressItemState(vm.generateInputStatus))
-                PttDividerLine()
+                VerifierDividerLine()
                 ProgressRow(stringResource(R.string.progress_step5), progressItemState(vm.proveStatus))
-                PttDividerLine()
+                VerifierDividerLine()
                 ProgressRow(stringResource(R.string.progress_step6), progressItemState(vm.verifyStatus))
             }
 
             if (isSubmitting || vm.proveStatus is ProofViewModel.StepStatus.Running || vm.proveStatus is ProofViewModel.StepStatus.Success) {
                 Spacer(Modifier.height(16.dp))
-                PttCard {
+                VerifierCard {
                     Column(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -660,10 +660,10 @@ private fun VerificationProgressScreen(vm: ProofViewModel) {
                         Text(stringResource(R.string.privacy_title),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = PttPrimary,
+                            color = VerifierPrimary,
                         )
                         Text(stringResource(R.string.privacy_body),
-                            style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                            style = MaterialTheme.typography.bodySmall, color = VerifierSecondary)
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement   = Arrangement.spacedBy(8.dp),
@@ -679,7 +679,7 @@ private fun VerificationProgressScreen(vm: ProofViewModel) {
                     Text(
                         stringResource(R.string.progress_learn_tech),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = PttAccent,
+                        color = VerifierAccent,
                     )
                 }
             }
@@ -708,7 +708,7 @@ private fun SuccessScreen(vm: ProofViewModel) {
         Icon(
             Icons.Filled.Check,
             contentDescription = null,
-            tint     = PttAccent,
+            tint     = VerifierAccent,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
@@ -718,13 +718,13 @@ private fun SuccessScreen(vm: ProofViewModel) {
         Spacer(Modifier.height(8.dp))
         Text(stringResource(R.string.success_title),
             style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold, color = PttPrimary)
+            fontWeight = FontWeight.Bold, color = VerifierPrimary)
         Spacer(Modifier.height(4.dp))
         Text(stringResource(R.string.success_body),
-            style = MaterialTheme.typography.bodyLarge, color = PttSecondary)
+            style = MaterialTheme.typography.bodyLarge, color = VerifierSecondary)
         Spacer(Modifier.height(24.dp))
 
-        PttCard {
+        VerifierCard {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -744,25 +744,25 @@ private fun SuccessScreen(vm: ProofViewModel) {
 
         Spacer(Modifier.height(12.dp))
 
-        PttCard {
+        VerifierCard {
             InfoRow(stringResource(R.string.success_label_result),     stringResource(R.string.success_value_result))
-            PttDividerLine()
+            VerifierDividerLine()
             InfoRow(stringResource(R.string.success_label_badge),      stringResource(R.string.value_badge_citizen))
-            PttDividerLine()
+            VerifierDividerLine()
             InfoRow(stringResource(R.string.label_credential),         stringResource(R.string.value_credential))
             vm.totalVerificationSeconds?.let { t ->
-                PttDividerLine()
+                VerifierDividerLine()
                 InfoRow(
                     stringResource(R.string.success_label_total_time),
                     stringResource(R.string.success_total_time_fmt, t),
                 )
             }
             (vm.proveStatus as? ProofViewModel.StepStatus.Success)?.message?.let { detail ->
-                PttDividerLine()
+                VerifierDividerLine()
                 InfoRow(stringResource(R.string.success_label_eligibility), detail)
             }
             vm.verifyMilliseconds?.let { ms ->
-                PttDividerLine()
+                VerifierDividerLine()
                 InfoRow(stringResource(R.string.success_label_submit_time), "$ms ms")
             }
         }
@@ -774,7 +774,7 @@ private fun SuccessScreen(vm: ProofViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(PttSurface)
+                .background(VerifierSurface)
                 .clickable { showTechInfo = !showTechInfo }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
@@ -784,11 +784,11 @@ private fun SuccessScreen(vm: ProofViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(stringResource(R.string.success_label_tech_details),
-                    style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+                    style = MaterialTheme.typography.bodyMedium, color = VerifierSecondary)
                 Icon(
                     if (showTechInfo) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                     contentDescription = null,
-                    tint = PttSecondary, modifier = Modifier.size(16.dp),
+                    tint = VerifierSecondary, modifier = Modifier.size(16.dp),
                 )
             }
             AnimatedVisibility(visible = showTechInfo) {
@@ -804,15 +804,15 @@ private fun SuccessScreen(vm: ProofViewModel) {
         }
 
         Spacer(Modifier.height(24.dp))
-        PttPrimaryButton(text = stringResource(R.string.btn_done), onClick = { vm.reset() })
+        VerifierPrimaryButton(text = stringResource(R.string.btn_done), onClick = { vm.reset() })
     }
 }
 
 @Composable
 private fun TechRow(label: String, value: String) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace), color = PttSecondary)
-        Text(value, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace), color = PttPrimary)
+        Text(label, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace), color = VerifierSecondary)
+        Text(value, style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace), color = VerifierPrimary)
     }
 }
 
@@ -845,7 +845,7 @@ private fun ErrorScreen(vm: ProofViewModel, message: String) {
         Icon(
             Icons.Filled.Warning,
             contentDescription = null,
-            tint     = PttError,
+            tint     = VerifierError,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
@@ -855,10 +855,10 @@ private fun ErrorScreen(vm: ProofViewModel, message: String) {
         Spacer(Modifier.height(8.dp))
         Text(stringResource(R.string.error_screen_title),
             style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold, color = PttPrimary)
+            fontWeight = FontWeight.Bold, color = VerifierPrimary)
         Spacer(Modifier.height(24.dp))
 
-        PttCard {
+        VerifierCard {
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -866,10 +866,10 @@ private fun ErrorScreen(vm: ProofViewModel, message: String) {
                 Text(errorTitle,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = PttPrimary,
+                    color = VerifierPrimary,
                 )
                 Text(explanation,
-                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                    style = MaterialTheme.typography.bodySmall, color = VerifierSecondary)
             }
         }
 
@@ -880,7 +880,7 @@ private fun ErrorScreen(vm: ProofViewModel, message: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(PttSurface)
+                .background(VerifierSurface)
                 .clickable { showDetails = !showDetails }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
@@ -890,11 +890,11 @@ private fun ErrorScreen(vm: ProofViewModel, message: String) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(stringResource(R.string.label_error_details),
-                    style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+                    style = MaterialTheme.typography.bodySmall, color = VerifierSecondary)
                 Icon(
                     if (showDetails) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                     contentDescription = null,
-                    tint = PttSecondary, modifier = Modifier.size(16.dp),
+                    tint = VerifierSecondary, modifier = Modifier.size(16.dp),
                 )
             }
             AnimatedVisibility(visible = showDetails) {
@@ -902,14 +902,14 @@ private fun ErrorScreen(vm: ProofViewModel, message: String) {
                     message,
                     modifier = Modifier.padding(top = 6.dp),
                     style    = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                    color    = PttSecondary,
+                    color    = VerifierSecondary,
                 )
             }
         }
 
         Spacer(Modifier.height(24.dp))
 
-        PttPrimaryButton(text = stringResource(R.string.btn_try_again), onClick = { vm.resetToReadiness() })
+        VerifierPrimaryButton(text = stringResource(R.string.btn_try_again), onClick = { vm.resetToReadiness() })
         Spacer(Modifier.height(12.dp))
         TextButton(
             onClick  = {
@@ -922,7 +922,7 @@ private fun ErrorScreen(vm: ProofViewModel, message: String) {
                 if (copied) stringResource(R.string.status_copied)
                 else        stringResource(R.string.btn_copy_error),
                 style = MaterialTheme.typography.bodyMedium,
-                color = PttAccent,
+                color = VerifierAccent,
             )
         }
         TextButton(
@@ -930,7 +930,7 @@ private fun ErrorScreen(vm: ProofViewModel, message: String) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(stringResource(R.string.btn_back_to_start),
-                style = MaterialTheme.typography.bodyMedium, color = PttSecondary)
+                style = MaterialTheme.typography.bodyMedium, color = VerifierSecondary)
         }
     }
 }
@@ -944,7 +944,7 @@ private fun ScreenScaffold(content: @Composable ColumnScope.() -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(PttBackground)
+            .background(VerifierBackground)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
             .padding(vertical = 56.dp),
@@ -954,18 +954,18 @@ private fun ScreenScaffold(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun PttCard(content: @Composable ColumnScope.() -> Unit) {
+private fun VerifierCard(content: @Composable ColumnScope.() -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(PttSurface),
+            .background(VerifierSurface),
     ) { content() }
 }
 
 @Composable
-private fun PttDividerLine() {
-    HorizontalDivider(color = PttDivider, thickness = 0.5.dp)
+private fun VerifierDividerLine() {
+    HorizontalDivider(color = VerifierDivider, thickness = 0.5.dp)
 }
 
 @Composable
@@ -977,9 +977,9 @@ private fun InfoRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment     = Alignment.Top,
     ) {
-        Text(label, style = MaterialTheme.typography.bodyMedium, color = PttSecondary,
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = VerifierSecondary,
             modifier = Modifier.weight(0.4f))
-        Text(value, style = MaterialTheme.typography.bodyMedium, color = PttPrimary,
+        Text(value, style = MaterialTheme.typography.bodyMedium, color = VerifierPrimary,
             textAlign = TextAlign.End, modifier = Modifier.weight(0.6f))
     }
 }
@@ -993,14 +993,14 @@ private fun ReadinessRow(label: String, detail: String, status: ReadinessStatus)
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-            Text(label, style = MaterialTheme.typography.bodyMedium, color = PttPrimary)
+            Text(label, style = MaterialTheme.typography.bodyMedium, color = VerifierPrimary)
             Text(
                 detail,
                 style = MaterialTheme.typography.bodySmall,
                 color = when (status) {
                     ReadinessStatus.Ready    -> Color(0xFF34C759)
-                    ReadinessStatus.NotReady -> PttError
-                    ReadinessStatus.Loading  -> PttSecondary
+                    ReadinessStatus.NotReady -> VerifierError
+                    ReadinessStatus.Loading  -> VerifierSecondary
                 },
             )
         }
@@ -1010,10 +1010,10 @@ private fun ReadinessRow(label: String, detail: String, status: ReadinessStatus)
                     tint = Color(0xFF34C759), modifier = Modifier.size(20.dp))
             ReadinessStatus.NotReady ->
                 Icon(Icons.Filled.Close, null,
-                    tint = PttError, modifier = Modifier.size(20.dp))
+                    tint = VerifierError, modifier = Modifier.size(20.dp))
             ReadinessStatus.Loading ->
                 CircularProgressIndicator(
-                    modifier = Modifier.size(18.dp), color = PttAccent, strokeWidth = 2.dp)
+                    modifier = Modifier.size(18.dp), color = VerifierAccent, strokeWidth = 2.dp)
         }
     }
 }
@@ -1033,23 +1033,23 @@ private fun ProgressRow(label: String, state: ProgressItemState) {
                     tint = Color(0xFF34C759), modifier = Modifier.size(20.dp))
             ProgressItemState.Active ->
                 CircularProgressIndicator(
-                    modifier = Modifier.size(18.dp), color = PttAccent, strokeWidth = 2.dp)
+                    modifier = Modifier.size(18.dp), color = VerifierAccent, strokeWidth = 2.dp)
             ProgressItemState.Pending ->
                 Icon(Icons.Filled.Check, null,
-                    tint = PttDivider, modifier = Modifier.size(20.dp))
+                    tint = VerifierDivider, modifier = Modifier.size(20.dp))
         }
         Text(
             label,
             style = MaterialTheme.typography.bodyMedium,
-            color = if (state == ProgressItemState.Pending) PttSecondary else PttPrimary,
+            color = if (state == ProgressItemState.Pending) VerifierSecondary else VerifierPrimary,
         )
     }
 }
 
 @Composable
 private fun PrivacyChip(label: String, icon: ImageVector, highlighted: Boolean = false) {
-    val bg = if (highlighted) PttAccent else PttDivider
-    val fg = if (highlighted) PttBackground else PttSecondary
+    val bg = if (highlighted) VerifierAccent else VerifierDivider
+    val fg = if (highlighted) VerifierBackground else VerifierSecondary
     Surface(shape = RoundedCornerShape(50), color = bg) {
         Row(
             modifier = Modifier.padding(horizontal = if (highlighted) 10.dp else 8.dp, vertical = if (highlighted) 6.dp else 5.dp),
@@ -1074,7 +1074,7 @@ private fun LearnMoreSheet(onDismiss: () -> Unit) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = PttBackground,
+        containerColor = VerifierBackground,
     ) {
         Row(
             modifier = Modifier
@@ -1086,13 +1086,13 @@ private fun LearnMoreSheet(onDismiss: () -> Unit) {
             Text(
                 stringResource(R.string.learn_more_nav_title),
                 style = MaterialTheme.typography.titleMedium,
-                color = PttPrimary,
+                color = VerifierPrimary,
             )
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.learn_more_done), color = PttAccent)
+                Text(stringResource(R.string.learn_more_done), color = VerifierAccent)
             }
         }
-        HorizontalDivider(color = PttDivider, thickness = 0.5.dp)
+        HorizontalDivider(color = VerifierDivider, thickness = 0.5.dp)
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
@@ -1102,7 +1102,7 @@ private fun LearnMoreSheet(onDismiss: () -> Unit) {
             Text(
                 stringResource(R.string.learn_more_body),
                 style = MaterialTheme.typography.bodyMedium,
-                color = PttSecondary,
+                color = VerifierSecondary,
             )
             LearnMoreSection(
                 title = stringResource(R.string.learn_more_s1_title),
@@ -1128,14 +1128,14 @@ private fun LearnMoreSection(title: String, body: String) {
             title,
             style      = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
-            color      = PttPrimary,
+            color      = VerifierPrimary,
         )
-        Text(body, style = MaterialTheme.typography.bodySmall, color = PttSecondary)
+        Text(body, style = MaterialTheme.typography.bodySmall, color = VerifierSecondary)
     }
 }
 
 @Composable
-private fun PttPrimaryButton(
+private fun VerifierPrimaryButton(
     text:     String,
     onClick:  () -> Unit,
     enabled:  Boolean  = true,
@@ -1149,10 +1149,10 @@ private fun PttPrimaryButton(
             .height(52.dp),
         shape  = RoundedCornerShape(15.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor         = PttAccent,
-            contentColor           = PttBackground,
-            disabledContainerColor = PttDivider,
-            disabledContentColor   = PttSecondary,
+            containerColor         = VerifierAccent,
+            contentColor           = VerifierBackground,
+            disabledContainerColor = VerifierDivider,
+            disabledContentColor   = VerifierSecondary,
         ),
     ) {
         Text(text, fontWeight = FontWeight.SemiBold)

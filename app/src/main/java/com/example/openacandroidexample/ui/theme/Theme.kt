@@ -4,27 +4,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 
-private val PttColorScheme = darkColorScheme(
-    primary          = PttAccent,
-    onPrimary        = PttBackground,
-    primaryContainer = PttSurface,
-    background       = PttBackground,
-    onBackground     = PttPrimary,
-    surface          = PttSurface,
-    onSurface        = PttPrimary,
-    surfaceVariant   = PttSurface,
-    onSurfaceVariant = PttSecondary,
-    outline          = PttDivider,
-    secondary        = PttSecondary,
-    onSecondary      = PttPrimary,
-    error            = PttError,
-    onError          = PttPrimary,
+private val VerifierColorScheme = darkColorScheme(
+    primary          = VerifierAccent,
+    onPrimary        = VerifierBackground,
+    primaryContainer = VerifierSurface,
+    background       = VerifierBackground,
+    onBackground     = VerifierPrimary,
+    surface          = VerifierSurface,
+    onSurface        = VerifierPrimary,
+    surfaceVariant   = VerifierSurface,
+    onSurfaceVariant = VerifierSecondary,
+    outline          = VerifierDivider,
+    secondary        = VerifierSecondary,
+    onSecondary      = VerifierPrimary,
+    error            = VerifierError,
+    onError          = VerifierPrimary,
 )
 
 @Composable
 fun OpenACAndroidExampleTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = PttColorScheme,
+        colorScheme = VerifierColorScheme,
         typography  = Typography,
         content     = content,
     )
