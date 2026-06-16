@@ -81,17 +81,7 @@ private const val SERVER_URL      = "https://<your-subdomain>.ngrok-free.app/cha
 private const val LINK_VERIFY_URL = "https://<your-subdomain>.ngrok-free.app/link-verify"
 ```
 
-### 4. Build and run
-
-1. Open the project in Android Studio (or run `open . -a Android\ Studio` from the project root).
-2. Select a physical Android device and ensure the [TW FidO app (行動自然人憑證)](https://play.google.com/store/apps/details?id=tw.gov.moi.moica.mobile) is installed.
-3. Build and run.
-4. On first launch, tap **Download Circuit + Keys** and wait for all files to download.
-5. Tap **0. Get TBS Challenge** to fetch a challenge from the server.
-6. Enter your ID number (身分證字號), then follow the MOICA steps in order.
-7. Tap **Run All (Prove → Verify)** (or individual step buttons) to generate and verify the ZK proofs.
-
-### Configuration — `Secrets.kt`
+### 3. Configuration — `Secrets.kt`
 
 The app requires TW FidO SP service credentials. Apply for these as an SP (Service Provider) at [https://fido.moi.gov.tw/pt/](https://fido.moi.gov.tw/pt/), then create or update the file below **before building** (it is git-ignored):
 
@@ -115,18 +105,29 @@ object Secrets {
 
 Credentials can also be supplied at test time via environment variables `FIDO_SP_SERVICE_ID` and `FIDO_AES_KEY`; the app falls back to `Secrets.kt` if those are absent.
 
-The app requires an internet connection on first launch to download the circuit keys and SMT snapshot from the CDN.
+### 4. Build and run
 
-## Architecture
+1. Open the project in Android Studio (or run `open . -a Android\ Studio` from the project root).
+2. Select a physical Android device and ensure the [TW FidO app (行動自然人憑證)](https://play.google.com/store/apps/details?id=tw.gov.moi.moica.mobile) is installed.
+3. Build and run.
+4. On first launch, tap **Download Circuit + Keys** and wait for all files to download.
+5. Tap **0. Get TBS Challenge** to fetch a challenge from the server.
+6. Enter your ID number (身分證字號), then follow the MOICA steps in order.
+7. Tap **Run All (Prove → Verify)** (or individual step buttons) to generate and verify the ZK proofs.
+                                            |
 
-| File                | Description                                                                                                |
-| ------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `MainActivity.kt`   | Entry point; wires the MOICA app2app callback URI into the ViewModel                                       |
-| `ProofViewModel.kt` | All state and business logic — download, MOICA API calls, ZK pipeline                                      |
-| `ZkIdComponent.kt`  | Compose UI — circuit download card, MOICA signature card, circuit input JSON viewer card, ZK pipeline card |
-| `FidoApi.kt`        | MOICA TW FidO REST API client (`getSpTicket`, `getAthOrSignResult`, `pollSignResult`, `computeSpChecksum`) |
-| `Secrets.kt`        | Fallback SP service credentials (git-ignored)                                                              |
-
-## Dependencies
+## See also
 
 - [openac-rsa-x509-kotlin](https://github.com/privacy-ethereum/openac-rsa-x509-kotlin) — Kotlin bindings for the OpenAC proving backend (`generateCertChainRs4096Input`, `proveCertChainRs4096`, `proveUserSigRs2048`)
+- [zkID releases](https://github.com/privacy-ethereum/zkID/releases/tag/RSA-X.509-Cert-latest) — circuit and key files
+- [moica-revocation-smt](https://github.com/privacy-ethereum/moica-revocation-smt) — SMT snapshot releases
+
+
+## Community
+
+- X account: <a href="https://twitter.com/zkmopro"><img src="https://img.shields.io/twitter/follow/zkmopro?style=flat-square&logo=x&label=zkmopro"></a>
+- Telegram group: <a href="https://t.me/zkmopro"><img src="https://img.shields.io/badge/telegram-@zkmopro-blue.svg?style=flat-square&logo=telegram"></a>
+
+## Acknowledgements
+
+It is currently incubated by [PSE](https://pse.dev/).
